@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Nodes;
+﻿using Microsoft.AspNetCore.Mvc;
 using PokémonTeambuilder.apiwrapper;
-using PokémonTeambuilder.core;
 using PokémonTeambuilder.core.Classes;
-using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.Services;
 
 namespace PokémonTeambuilder.Controllers
