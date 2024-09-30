@@ -65,7 +65,8 @@ namespace PokémonTeambuilder.apiwrapper
             BasePokemon pokemon = new BasePokemon
             {
                 Id = (int)jsonObject["id"],
-                Name = jsonObject["name"].ToString()
+                Name = jsonObject["name"].ToString(),
+                Sprite = jsonObject["sprites"]["front_default"].ToString()
             };
 
             List<Typing> types = new List<Typing>();
