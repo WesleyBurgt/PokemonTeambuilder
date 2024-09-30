@@ -14,12 +14,12 @@ namespace PokémonTeambuilder.Controllers
     public class PokemonController : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Index(int offset)
+        public async Task<IActionResult> Index(int offset, int limit)
         {
             BasePokemonService basePokemonService = new BasePokemonService(new BasePokemonWrapper());
             try
             {
-                List<BasePokemon> list = await basePokemonService.GetPokemonList(offset, 10);
+                List<BasePokemon> list = await basePokemonService.GetPokemonList(offset, limit);
                 return Ok(list);
             }
             catch (Exception ex)
