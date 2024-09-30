@@ -1,4 +1,7 @@
 
+using PokémonTeambuilder.core.Classes;
+using System.Text.Json.Serialization;
+
 namespace PokémonTeambuilder
 {
     public class Program
@@ -10,6 +13,12 @@ namespace PokémonTeambuilder
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new CamelCaseEnumConverter<StatsEnum>());
+            });
+
 
             builder.Services.AddCors(options =>
             {
