@@ -8,26 +8,35 @@ namespace PokémonTeambuilder.apiwrapper
 {
     public class BasePokemonWrapper : IBasePokemonWrapper
     {
+        PokemonApi api;
+        TypingWrapper typingWrapper = new TypingWrapper();
+        List<Typing> typings;
+
+        public BasePokemonWrapper() 
+        {
+            Configuration config = new Configuration();
+            config.BasePath = "https://pokeapi.co";
+            api = new PokemonApi(config);
+        }
+
         public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
         {
             if (offset < 0)
             {
                 throw new Exception("offset must be 0 or more"); //TODO: custom exception
             }
-            Configuration config = new Configuration();
-            config.BasePath = "https://pokeapi.co";
-            PokemonApi api = new PokemonApi(config);
 
             var json = api.PokemonList(limit, offset);
             JObject jsonObject = JObject.Parse(json);
             JArray jsonArray = (JArray)jsonObject["results"];
             List<int> ids = jsonArray.Select(pokemon =>
             {
-                string url = (string)pokemon["url"];
+                string url = pokemon["url"].ToString();
                 return GetIdOutOfUrl(url);
 
             }).ToList();
 
+            typings = await typingWrapper.GetAllTypings();
             List<BasePokemon> pokemons = [];
             List<Task<BasePokemon>> tasks = new List<Task<BasePokemon>>();
             foreach (int id in ids)
@@ -55,10 +64,6 @@ namespace PokémonTeambuilder.apiwrapper
 
         private async Task<BasePokemon> GetBasePokemon(int id)
         {
-            Configuration config = new Configuration();
-            config.BasePath = "https://pokeapi.co";
-            PokemonApi api = new PokemonApi(config);
-
             string json = await api.PokemonReadAsync(id);
             JObject jsonObject = JObject.Parse(json);
 
@@ -74,15 +79,27 @@ namespace PokémonTeambuilder.apiwrapper
             {
                 JToken typeToken = type["type"];
                 string typeName = typeToken["name"].ToString();
-                int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
-                types.Add(new Typing { Name = typeName, Id = typeId });
+                if (typings != null)
+                {
+                    Typing typing = typings.FirstOrDefault(t => t.Name == typeName);
+                    if (typing != null)
+                    {
+                        types.Add(typing);
+                    }
+                }
+                else
+                {
+                    int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
+                    Typing typing = await typingWrapper.GetTypingById(typeId);
+                    typings.Add(typing);
+                }
             }
             pokemon.Typings = types;
 
             Stats stats = new Stats();
             foreach (var stat in jsonObject["stats"])
             {
-                string statName = (string)stat["stat"]["name"];
+                string statName = stat["stat"]["name"].ToString();
                 int baseStat = (int)stat["base_stat"];
                 switch (statName)
                 {
