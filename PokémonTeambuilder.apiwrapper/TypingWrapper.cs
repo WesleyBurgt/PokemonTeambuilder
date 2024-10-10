@@ -1,30 +1,33 @@
 ﻿using Newtonsoft.Json.Linq;
-using Org.OpenAPITools.Api;
-using Org.OpenAPITools.Client;
 using PokémonTeambuilder.core.Classes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
 {
     public class TypingWrapper
     {
-        TypeApi api;
+        static HttpClient client = new HttpClient();
 
         public TypingWrapper()
         {
-            Configuration config = new Configuration();
-            config.BasePath = "https://pokeapi.co";
-            api = new TypeApi(config);
+            if (client.BaseAddress == null)
+            {
+                client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+            }
         }
 
         public async Task<List<Typing>> GetAllTypings()
         {
-            var json = api.TypeList();
+            HttpResponseMessage response = await client.GetAsync($"type/");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
             JArray jsonArray = (JArray)jsonObject["results"];
             List<int> ids = jsonArray.Select(types =>
@@ -61,7 +64,13 @@ namespace PokémonTeambuilder.apiwrapper
 
         public async Task<Typing> GetTypingById(int id)
         {
-            string json = await api.TypeReadAsync(id);
+            HttpResponseMessage response = await client.GetAsync($"type/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
             JToken damageRelations = jsonObject["damage_relations"];
 

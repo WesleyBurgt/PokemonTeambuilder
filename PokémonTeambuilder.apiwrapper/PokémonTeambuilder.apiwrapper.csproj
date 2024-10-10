@@ -17,11 +17,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PokémonTeambuilder.core\PokémonTeambuilder.core.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Org.OpenAPITools">
-      <HintPath>..\..\pokeapi-clients-main\clients\csharp\generated\src\Org.OpenAPITools\bin\Debug\net8.0\Org.OpenAPITools.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

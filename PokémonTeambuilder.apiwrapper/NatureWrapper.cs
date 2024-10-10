@@ -1,20 +1,36 @@
 ﻿using Newtonsoft.Json.Linq;
-using Org.OpenAPITools.Api;
-using Org.OpenAPITools.Client;
 using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.Classes;
+using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
 {
     public class NatureWrapper : INatureWrapper
     {
+        static HttpClient client = new HttpClient();
+
+        public NatureWrapper() 
+        {
+            if (client.BaseAddress == null)
+            {
+                client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+            }
+        }
+
         public async Task<List<Nature>> GetAllNatures()
         {
-            Configuration config = new Configuration();
-            config.BasePath = "https://pokeapi.co";
-            NatureApi api = new NatureApi(config);
+            int NatureCount = await GetNatureCount();
 
-            var json = api.NatureList(GetNatureCount(api), 0);
+            HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit={NatureCount}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
             JArray jsonArray = (JArray)jsonObject["results"];
             List<int> ids = jsonArray.Select(nature =>
@@ -43,9 +59,15 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        private int GetNatureCount(NatureApi api)
+        private async Task<int> GetNatureCount()
         {
-            var json = api.NatureList(1, 0);
+            HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit=1");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
             int natureCount = (int)jsonObject["count"];
             return natureCount;
@@ -74,11 +96,13 @@ namespace PokémonTeambuilder.apiwrapper
 
         private async Task<Nature> GetNature(int id)
         {
-            Configuration config = new Configuration();
-            config.BasePath = "https://pokeapi.co";
-            NatureApi api = new NatureApi(config);
+            HttpResponseMessage response = await client.GetAsync($"nature/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
 
-            string json = await api.NatureReadAsync(id);
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
 
             JToken jsonIncreasedStat = jsonObject["increased_stat"];

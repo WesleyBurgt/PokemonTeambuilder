@@ -1,22 +1,26 @@
 ﻿using Newtonsoft.Json.Linq;
-using Org.OpenAPITools.Api;
-using Org.OpenAPITools.Client;
 using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.Classes;
+using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
 {
     public class BasePokemonWrapper : IBasePokemonWrapper
     {
-        PokemonApi api;
+        static HttpClient client = new HttpClient();
+
         TypingWrapper typingWrapper = new TypingWrapper();
         List<Typing> typings;
 
         public BasePokemonWrapper() 
         {
-            Configuration config = new Configuration();
-            config.BasePath = "https://pokeapi.co";
-            api = new PokemonApi(config);
+            if (client.BaseAddress == null)
+            {
+                client.BaseAddress = new Uri("https://pokeapi.co/api/v2/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+            }
         }
 
         public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
@@ -26,7 +30,13 @@ namespace PokémonTeambuilder.apiwrapper
                 throw new Exception("offset must be 0 or more"); //TODO: custom exception
             }
 
-            var json = api.PokemonList(limit, offset);
+
+            HttpResponseMessage response = await client.GetAsync($"pokemon?offset={offset}&limit={limit}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
             JArray jsonArray = (JArray)jsonObject["results"];
             List<int> ids = jsonArray.Select(pokemon =>
@@ -64,7 +74,13 @@ namespace PokémonTeambuilder.apiwrapper
 
         private async Task<BasePokemon> GetBasePokemon(int id)
         {
-            string json = await api.PokemonReadAsync(id);
+            HttpResponseMessage response = await client.GetAsync($"pokemon/{id}/");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
 
             BasePokemon pokemon = new BasePokemon
