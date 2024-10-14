@@ -2,6 +2,7 @@
 using PokémonTeambuilder.apiwrapper;
 using PokémonTeambuilder.core.Classes;
 using PokémonTeambuilder.core.Services;
+using PokémonTeambuilder.DbContext;
 
 namespace PokémonTeambuilder.Controllers
 {
@@ -9,6 +10,12 @@ namespace PokémonTeambuilder.Controllers
     [Route("[controller]")]
     public class PokemonController : Controller
     {
+        private readonly AppDbContext _context;
+
+        public PokemonController(AppDbContext context)
+        {
+            _context = context;
+        }
         [HttpGet]
         public async Task<IActionResult> Index(int offset, int limit)
         {

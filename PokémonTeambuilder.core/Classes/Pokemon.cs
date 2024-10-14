@@ -10,6 +10,12 @@
         public Nature Nature { get; set; }
         public Ability Ability { get; set; }
         public List<Move> SelectedMoves { get; set; }
+
+        // Foreign key properties
+        public int EVsId { get; set; }
+        public int IVsId { get; set; }
+
+        // Navigation properties
         public Stats EVs { get; set; }
         public Stats IVs { get; set; }
     }

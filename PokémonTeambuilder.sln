@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokémonTeambuilder", "PokémonTeambuilder\PokémonTeambuilder.csproj", "{A9BB73CA-6938-402D-B08C-47629A0B37E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokémonTeambuilder", "PokémonTeambuilder\PokémonTeambuilder.csproj", "{A9BB73CA-6938-402D-B08C-47629A0B37E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokémonTeambuilder.core", "PokémonTeambuilder.core\PokémonTeambuilder.core.csproj", "{56929E1D-69EC-4DB6-A342-3CDEFFA8F698}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokémonTeambuilder.core", "PokémonTeambuilder.core\PokémonTeambuilder.core.csproj", "{56929E1D-69EC-4DB6-A342-3CDEFFA8F698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokémonTeambuilder.apiwrapper", "PokémonTeambuilder.apiwrapper\PokémonTeambuilder.apiwrapper.csproj", "{805C4AD1-E528-4AA2-A907-BF111CF533B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokémonTeambuilder.apiwrapper", "PokémonTeambuilder.apiwrapper\PokémonTeambuilder.apiwrapper.csproj", "{805C4AD1-E528-4AA2-A907-BF111CF533B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

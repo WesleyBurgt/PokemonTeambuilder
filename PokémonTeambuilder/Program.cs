@@ -1,11 +1,16 @@
-
+using Microsoft.EntityFrameworkCore;
 using PokémonTeambuilder.core.Classes;
-using System.Text.Json.Serialization;
+using PokémonTeambuilder.DbContext;
 
 namespace PokémonTeambuilder
 {
     public class Program
     {
+        public static IHostBuilder CreateHostBuilder(string[] args)
+            => Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(
+            webBuilder => webBuilder.UseStartup<Startup>());
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +32,11 @@ namespace PokémonTeambuilder
                                     .AllowAnyMethod()
                                     .AllowAnyHeader());
             });
+
+            var connectionString = builder.Configuration.GetConnectionString("PokemonBuilderDatabaseConnectionString");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(connectionString));
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -51,6 +61,16 @@ namespace PokémonTeambuilder
             app.MapControllers();
 
             app.Run();
+        }
+    }
+
+    public class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+            => services.AddDbContext<AppDbContext>();
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
         }
     }
 }
