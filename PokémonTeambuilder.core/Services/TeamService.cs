@@ -1,28 +1,19 @@
 ﻿using PokémonTeambuilder.core.Classes;
-using PokémonTeambuilder.core.DalInterfaces;
 
 namespace PokémonTeambuilder.core.Services
 {
     public class TeamService
     {
-        private readonly ITeamDAL teamDAL;
-
-        public TeamService(ITeamDAL teamDAL)
-        {
-            this.teamDAL = teamDAL;
-        }
-
+        //TODO: TeamService
         public async Task<Team> GetTeamById(int id)
         {
-            Team team = await teamDAL.GetTeamById(id);
-            //TODO: check for exceptions
+            Team team = new Team();
             return team;
         }
 
         public async Task<List<Team>> GetTeaksByUserId(int id)
         {
-            List<Team> teams = await teamDAL.GetTeamsByUserId(id);
-            //TODO: check for exceptions
+            List<Team> teams = [];
             return teams;
         }
     }

@@ -6,7 +6,7 @@ namespace PokémonTeambuilder.core.Services
     public class BasePokemonService
     {
         private readonly IBasePokemonWrapper pokemonWrapper;
-        public BasePokemonService(IBasePokemonWrapper pokemonWrapper) 
+        public BasePokemonService(IBasePokemonWrapper pokemonWrapper)
         {
             this.pokemonWrapper = pokemonWrapper;
         }
@@ -14,7 +14,7 @@ namespace PokémonTeambuilder.core.Services
         public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
         {
             List<BasePokemon> list = await pokemonWrapper.GetPokemonList(offset, limit);
-            foreach(BasePokemon pokemon in list)
+            foreach (BasePokemon pokemon in list)
             {
                 //TODO: make custom Exceptions
                 if (pokemon.Id <= 0)

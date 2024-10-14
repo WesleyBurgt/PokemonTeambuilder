@@ -16,6 +16,7 @@ namespace PokémonTeambuilder.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public async Task<IActionResult> Index(int offset, int limit)
         {

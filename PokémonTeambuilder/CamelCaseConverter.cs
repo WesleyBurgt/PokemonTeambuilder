@@ -1,6 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Globalization;
 
 public class CamelCaseEnumConverter<T> : JsonConverter<T> where T : struct, Enum
 {

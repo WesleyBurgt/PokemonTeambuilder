@@ -21,19 +21,19 @@ namespace PokémonTeambuilder.DbContext
                 .HasOne(b => b.BaseStats)
                 .WithMany()
                 .HasForeignKey(b => b.BaseStatsId)
-                .OnDelete(DeleteBehavior.NoAction); // Change to NoAction or Restrict
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Pokemon>()
                 .HasOne(b => b.EVs)
                 .WithMany()
                 .HasForeignKey(b => b.EVsId)
-                .OnDelete(DeleteBehavior.NoAction); // Change to NoAction or Restrict
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Pokemon>()
                 .HasOne(b => b.IVs)
                 .WithMany()
                 .HasForeignKey(b => b.IVsId)
-                .OnDelete(DeleteBehavior.NoAction); // Change to NoAction or Restrict
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
