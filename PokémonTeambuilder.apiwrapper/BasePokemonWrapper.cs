@@ -9,8 +9,9 @@ namespace PokémonTeambuilder.apiwrapper
     {
         static HttpClient client = new HttpClient();
 
-        TypingWrapper typingWrapper = new TypingWrapper();
-        List<Typing> typings;
+        private bool multiplePokemonFetches = false;
+        private TypingWrapper typingWrapper = new TypingWrapper();
+        private List<Typing> typings = [];
 
         public BasePokemonWrapper() 
         {
@@ -29,7 +30,7 @@ namespace PokémonTeambuilder.apiwrapper
             {
                 throw new Exception("offset must be 0 or more"); //TODO: custom exception
             }
-
+            multiplePokemonFetches = limit > 1;
 
             HttpResponseMessage response = await client.GetAsync($"pokemon?offset={offset}&limit={limit}");
             if (!response.IsSuccessStatusCode)
@@ -95,19 +96,26 @@ namespace PokémonTeambuilder.apiwrapper
             {
                 JToken typeToken = type["type"];
                 string typeName = typeToken["name"].ToString();
-                if (typings != null)
+                if (multiplePokemonFetches)
                 {
                     Typing typing = typings.FirstOrDefault(t => t.Name == typeName);
                     if (typing != null)
                     {
                         types.Add(typing);
                     }
+                    else
+                    {
+                        int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
+                        typing = await typingWrapper.GetTypingById(typeId);
+                        types.Add(typing);
+                        typings.Add(typing);
+                    }
                 }
                 else
                 {
                     int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
                     Typing typing = await typingWrapper.GetTypingById(typeId);
-                    typings.Add(typing);
+                    types.Add(typing);
                 }
             }
             pokemon.Typings = types;
