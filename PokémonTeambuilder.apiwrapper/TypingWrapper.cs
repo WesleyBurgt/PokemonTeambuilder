@@ -78,9 +78,9 @@ namespace PokémonTeambuilder.apiwrapper
             JArray resistances = (JArray)damageRelations["half_damage_from"];
             JArray immunities = (JArray)damageRelations["no_damage_from"];
 
-            List<Typing> weaknessList = GetTypingWithoutRelationsOutOfJArray(weaknesses);
-            List<Typing> resistanceList = GetTypingWithoutRelationsOutOfJArray(resistances);
-            List<Typing> immunityList = GetTypingWithoutRelationsOutOfJArray(immunities);
+            List<TypingRelationless> weaknessList = GetTypingWithoutRelationsOutOfJArray(weaknesses);
+            List<TypingRelationless> resistanceList = GetTypingWithoutRelationsOutOfJArray(resistances);
+            List<TypingRelationless> immunityList = GetTypingWithoutRelationsOutOfJArray(immunities);
 
             Typing typing = new Typing
             {
@@ -93,14 +93,14 @@ namespace PokémonTeambuilder.apiwrapper
             return typing;
         }
 
-        private List<Typing> GetTypingWithoutRelationsOutOfJArray(JArray array)
+        private List<TypingRelationless> GetTypingWithoutRelationsOutOfJArray(JArray array)
         {
-            List<Typing> typings = array.Select(typing =>
+            List<TypingRelationless> typings = array.Select(typing =>
             {
                 string name = typing["name"].ToString();
                 string url = typing["url"].ToString();
                 int id = GetIdOutOfUrl(url);
-                return new Typing { Id = id, Name = name };
+                return new TypingRelationless { Id = id, Name = name };
 
             }).ToList();
             return typings;
