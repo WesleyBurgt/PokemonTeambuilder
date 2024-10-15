@@ -1,7 +1,8 @@
-﻿namespace PokémonTeambuilder.core.Classes
+﻿namespace PokémonTeambuilder.core.Dto
 {
-    public class Stats
+    public class StatsDto
     {
+        public int Id { get; set; }
         public int Hp { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
@@ -9,4 +10,5 @@
         public int SpecialDefense { get; set; }
         public int Speed { get; set; }
     }
+
 }

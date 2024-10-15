@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.Dto;
 using System.Reflection;
 
 namespace PokémonTeambuilder.DbContext
@@ -11,29 +11,55 @@ namespace PokémonTeambuilder.DbContext
         {
         }
 
-        public DbSet<BasePokemon> BasePokemons { get; set; }
-        public DbSet<Nature> Natures { get; set; }
-        public DbSet<Team> Teams { get; set; }
+        public DbSet<BasePokemonDto> BasePokemons { get; set; }
+        public DbSet<PokemonDto> Pokemons { get; set; }
+        public DbSet<TeamDto> Teams { get; set; }
+        public DbSet<AbilityDto> Abilities { get; set; }
+        public DbSet<MoveDto> Moves { get; set; }
+        public DbSet<StatsDto> Stats { get; set; }
+        public DbSet<TypingDto> Typings { get; set; }
+        public DbSet<ItemDto> Items { get; set; }
+        public DbSet<NatureDto> Natures { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<BasePokemon>()
-                .HasOne(b => b.BaseStats)
-                .WithMany()
-                .HasForeignKey(b => b.BaseStatsId)
-                .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Pokemon>()
-                .HasOne(b => b.EVs)
+            modelBuilder.Entity<PokemonDto>()
+                .HasOne(p => p.EVs)
                 .WithMany()
-                .HasForeignKey(b => b.EVsId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(p => p.EVsId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Pokemon>()
-                .HasOne(b => b.IVs)
+            modelBuilder.Entity<PokemonDto>()
+                .HasOne(p => p.IVs)
                 .WithMany()
-                .HasForeignKey(b => b.IVsId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(p => p.IVsId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Many-to-many relationship between BasePokemon and Typing
+            modelBuilder.Entity<BasePokemonDto>()
+                .HasMany(b => b.Typings)
+                .WithMany(t => t.BasePokemons)
+                .UsingEntity(j => j.ToTable("BasePokemonTypings"));
+
+            // Many-to-many relationship between BasePokemon and Ability
+            modelBuilder.Entity<BasePokemonDto>()
+                .HasMany(b => b.Abilities)
+                .WithMany(a => a.BasePokemons)
+                .UsingEntity(j => j.ToTable("BasePokemonAbilities"));
+
+            // Many-to-many relationship between BasePokemon and Move
+            modelBuilder.Entity<BasePokemonDto>()
+                .HasMany(b => b.Moves)
+                .WithMany(m => m.BasePokemons)
+                .UsingEntity(j => j.ToTable("BasePokemonMoves"));
+
+            // Many-to-many relationship between Pokemon and Move (SelectedMoves)
+            modelBuilder.Entity<PokemonDto>()
+                .HasMany(p => p.SelectedMoves)
+                .WithMany(m => m.Pokemons)
+                .UsingEntity(j => j.ToTable("PokemonSelectedMoves"));
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
