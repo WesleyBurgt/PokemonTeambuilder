@@ -2,6 +2,7 @@
 using PokémonTeambuilder.apiwrapper;
 using PokémonTeambuilder.core.Classes;
 using PokémonTeambuilder.core.Services;
+using PokémonTeambuilder.dal;
 using PokémonTeambuilder.DbContext;
 
 namespace PokémonTeambuilder.Controllers
@@ -20,7 +21,8 @@ namespace PokémonTeambuilder.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int offset, int limit)
         {
-            BasePokemonService basePokemonService = new BasePokemonService(new BasePokemonWrapper());
+            BasePokemonRepos basePokemonRepos = new BasePokemonRepos(_context);
+            BasePokemonService basePokemonService = new BasePokemonService(basePokemonRepos);
             try
             {
                 List<BasePokemon> list = await basePokemonService.GetPokemonList(offset, limit);

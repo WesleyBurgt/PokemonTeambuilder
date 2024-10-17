@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PokémonTeambuilder.apiwrapper\PokémonTeambuilder.apiwrapper.csproj" />
     <ProjectReference Include="..\PokémonTeambuilder.core\PokémonTeambuilder.core.csproj" />
+    <ProjectReference Include="..\PokémonTeambuilder.dal\PokémonTeambuilder.dal.csproj" />
   </ItemGroup>
 
 </Project>

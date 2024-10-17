@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
+using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.Classes;
 using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
 {
-    public class TypingWrapper
+    public class TypingWrapper : ITypingWrapper
     {
         static HttpClient client = new HttpClient();
 
@@ -21,7 +22,7 @@ namespace PokémonTeambuilder.apiwrapper
 
         public async Task<List<Typing>> GetAllTypings()
         {
-            HttpResponseMessage response = await client.GetAsync($"type/");
+            HttpResponseMessage response = await client.GetAsync($"type");
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Could not get response from api"); //TODO: custom exception
@@ -52,7 +53,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
             else
             {
-                throw new Exception("could not get pokemon list"); //TODO: custom exception
+                throw new Exception("could not get type list"); //TODO: custom exception
             }
         }
 

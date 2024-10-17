@@ -11,6 +11,20 @@ namespace PokémonTeambuilder.core.Services
             this.natureWrapper = natureWrapper;
         }
 
+        public async Task<List<Nature>> GetAllNaturesFromApi()
+        {
+            List<Nature> list = await natureWrapper.GetAllNatures();
+            foreach (Nature nature in list)
+            {
+                //TODO: make custom Exceptions
+                if (nature.Id <= 0)
+                    throw new Exception("Nature Id cannot be" + nature.Id);
+                if (String.IsNullOrEmpty(nature.Name))
+                    throw new Exception("Nature Name cannot be null or empty");
+            }
+            return list;
+        }
+
         public async Task<List<Nature>> GetAllNatures()
         {
             List<Nature> list = await natureWrapper.GetAllNatures();

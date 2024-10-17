@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PokémonTeambuilder.DbContext;
 
@@ -11,9 +12,11 @@ using PokémonTeambuilder.DbContext;
 namespace PokémonTeambuilder.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241016073247_AddedManualIds")]
+    partial class AddedManualIds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -321,51 +324,6 @@ namespace PokémonTeambuilder.Migrations
                     b.ToTable("Typings");
                 });
 
-            modelBuilder.Entity("TypingImmunity", b =>
-                {
-                    b.Property<int>("ImmunityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TypingId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ImmunityId", "TypingId");
-
-                    b.HasIndex("TypingId");
-
-                    b.ToTable("TypingImmunity");
-                });
-
-            modelBuilder.Entity("TypingResistance", b =>
-                {
-                    b.Property<int>("ResistanceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TypingId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ResistanceId", "TypingId");
-
-                    b.HasIndex("TypingId");
-
-                    b.ToTable("TypingResistance");
-                });
-
-            modelBuilder.Entity("TypingWeakness", b =>
-                {
-                    b.Property<int>("TypingId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WeaknessId")
-                        .HasColumnType("int");
-
-                    b.HasKey("TypingId", "WeaknessId");
-
-                    b.HasIndex("WeaknessId");
-
-                    b.ToTable("TypingWeakness");
-                });
-
             modelBuilder.Entity("AbilityDtoBasePokemonDto", b =>
                 {
                     b.HasOne("PokémonTeambuilder.core.Dto.AbilityDto", null)
@@ -501,51 +459,6 @@ namespace PokémonTeambuilder.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Nature");
-                });
-
-            modelBuilder.Entity("TypingImmunity", b =>
-                {
-                    b.HasOne("PokémonTeambuilder.core.Dto.TypingDto", null)
-                        .WithMany()
-                        .HasForeignKey("ImmunityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PokémonTeambuilder.core.Dto.TypingDto", null)
-                        .WithMany()
-                        .HasForeignKey("TypingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TypingResistance", b =>
-                {
-                    b.HasOne("PokémonTeambuilder.core.Dto.TypingDto", null)
-                        .WithMany()
-                        .HasForeignKey("ResistanceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PokémonTeambuilder.core.Dto.TypingDto", null)
-                        .WithMany()
-                        .HasForeignKey("TypingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TypingWeakness", b =>
-                {
-                    b.HasOne("PokémonTeambuilder.core.Dto.TypingDto", null)
-                        .WithMany()
-                        .HasForeignKey("TypingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PokémonTeambuilder.core.Dto.TypingDto", null)
-                        .WithMany()
-                        .HasForeignKey("WeaknessId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PokémonTeambuilder.core.Dto.TeamDto", b =>
