@@ -1,34 +1,28 @@
-﻿using PokémonTeambuilder.core.DbInterfaces;
+﻿using PokémonTeambuilder.core.ApiInterfaces;
+using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
-using System.Collections.Generic;
 
-namespace PokémonTeambuilder.core.Services
+namespace PokémonTeambuilder.core.ApiServices
 {
     public class NatureService
     {
+        private readonly INatureWrapper natureWrapper;
         private readonly INatureRepos natureRepos;
-        public NatureService(INatureRepos natureRepos)
+
+        public NatureService(INatureWrapper natureWrapper, INatureRepos natureRepos)
         {
+            this.natureWrapper = natureWrapper;
             this.natureRepos = natureRepos;
         }
 
-        public async Task<List<Nature>> GetAllNatures()
+        public async Task GetAllNaturesAndSaveThem()
         {
-            List<Nature> natures = [];
-            try
-            {
-                natures = await natureRepos.GetAllNatures();
-            }
-            catch (Exception ex)
-            {
-                return [];
-            }
-
+            List<Nature> natures = await natureWrapper.GetAllNatures();
             foreach (Nature nature in natures)
             {
                 ValidateNature(nature);
             }
-            return natures;
+            natureRepos.SetAllNatures(natures);
         }
 
         private void ValidateNature(Nature nature)

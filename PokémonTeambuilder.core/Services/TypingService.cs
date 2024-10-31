@@ -1,5 +1,5 @@
 ﻿using PokémonTeambuilder.core.ApiInterfaces;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
 {
@@ -19,7 +19,7 @@ namespace PokémonTeambuilder.core.Services
                 //TODO: make custom Exceptions
                 if (typing.Id <= 0)
                     throw new Exception("Typing Id cannot be" + typing.Id);
-                if (String.IsNullOrEmpty(typing.Name))
+                if (string.IsNullOrEmpty(typing.Name))
                     throw new Exception("Typing Name cannot be null or empty");
             }
             return list;

@@ -1,4 +1,4 @@
-﻿using PokémonTeambuilder.core.Classes;
+﻿using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.ApiInterfaces
 {

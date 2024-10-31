@@ -1,18 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PokémonTeambuilder.apiwrapper;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.core.Services;
+using PokémonTeambuilder.dal.DbContext;
+using PokémonTeambuilder.dal.Repos;
 
 namespace PokémonTeambuilder.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class NatureController : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        private readonly NatureService natureService;
+
+        public NatureController(PokemonTeambuilderDbContext context)
         {
-            NatureService natureService = new NatureService(new NatureWrapper());
+            natureService = new NatureService(new NatureRepos(context));
+        }
+
+        [HttpGet("List")]
+        public async Task<IActionResult> List()
+        {
             try
             {
                 List<Nature> list = await natureService.GetAllNatures();

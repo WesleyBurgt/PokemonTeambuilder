@@ -1,34 +1,28 @@
-﻿using PokémonTeambuilder.core.DbInterfaces;
+﻿using PokémonTeambuilder.core.ApiInterfaces;
+using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 
-namespace PokémonTeambuilder.core.Services
+namespace PokémonTeambuilder.core.ApiServices
 {
     public class BasePokemonService
     {
+        private readonly IBasePokemonWrapper pokemonWrapper;
         private readonly IBasePokemonRepos pokemonRepos;
 
-        public BasePokemonService(IBasePokemonRepos pokemonRepos)
+        public BasePokemonService(IBasePokemonWrapper pokemonWrapper, IBasePokemonRepos pokemonRepos)
         {
+            this.pokemonWrapper = pokemonWrapper;
             this.pokemonRepos = pokemonRepos;
         }
 
-        public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
+        public async Task GetAllBasePokemonAndSaveThem()
         {
-            List<BasePokemon> basePokemons = [];
-            try
+            List<BasePokemon> basePokemons = await pokemonWrapper.GetPokemonList(0, 10); //TODO: change to int.MaxValue
+            foreach (BasePokemon pokemon in basePokemons)
             {
-                basePokemons = await pokemonRepos.GetBasePokemonList(offset, limit);
+                ValidateBasePokemon(pokemon);
             }
-            catch (Exception ex)
-            {
-                return [];
-            }
-
-            foreach (BasePokemon basePokemon in basePokemons)
-            {
-                ValidateBasePokemon(basePokemon);
-            }
-            return basePokemons;
+            pokemonRepos.SetBasePokemonList(basePokemons);
         }
 
         private void ValidateBasePokemon(BasePokemon pokemon)

@@ -1,9 +1,10 @@
-﻿using PokémonTeambuilder.core.Dto;
+﻿using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.DbInterfaces
 {
     public interface IBasePokemonRepos
     {
-        Task<List<BasePokemonDto>> GetBasePokemonList(int offset, int limit);
+        Task<List<BasePokemon>> GetBasePokemonList(int offset, int limit);
+        void SetBasePokemonList(List<BasePokemon> basePokemons);
     }
 }

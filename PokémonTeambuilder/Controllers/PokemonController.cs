@@ -1,28 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PokémonTeambuilder.apiwrapper;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.core.Services;
-using PokémonTeambuilder.dal;
-using PokémonTeambuilder.DbContext;
+using PokémonTeambuilder.dal.DbContext;
+using PokémonTeambuilder.dal.Repos;
 
 namespace PokémonTeambuilder.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class PokemonController : Controller
+    [Route("api/[controller]")]
+    public class PokemonController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly BasePokemonService basePokemonService;
 
-        public PokemonController(AppDbContext context)
+        public PokemonController(PokemonTeambuilderDbContext context)
         {
-            _context = context;
+            basePokemonService = new BasePokemonService(new BasePokemonRepos(context));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index(int offset, int limit)
+        [HttpGet("List")]
+        public async Task<IActionResult> List(int offset, int limit)
         {
-            BasePokemonRepos basePokemonRepos = new BasePokemonRepos(_context);
-            BasePokemonService basePokemonService = new BasePokemonService(basePokemonRepos);
             try
             {
                 List<BasePokemon> list = await basePokemonService.GetPokemonList(offset, limit);
