@@ -24,7 +24,7 @@ namespace PokémonTeambuilder.dal.Repos
         {
             foreach (Nature nature in natures)
             {
-                if (context.Natures.Any(bp => bp.Id == nature.Id))
+                if (context.Natures.Any(n => n.Id == nature.Id))
                 {
                     context.Natures.Update(nature);
                 }
