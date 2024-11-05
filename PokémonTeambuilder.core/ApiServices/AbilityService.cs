@@ -22,7 +22,7 @@ namespace PokémonTeambuilder.core.ApiServices
             {
                 ValidateAbility(ability);
             }
-            abilityRepos.SetAllAbilities(abilitys);
+            await abilityRepos.SetAllAbilitiesAsync(abilitys);
         }
 
         private void ValidateAbility(Ability ability)

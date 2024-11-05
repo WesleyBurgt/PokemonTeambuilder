@@ -17,7 +17,7 @@ namespace PokémonTeambuilder.core.Services
             List<Nature> natures = [];
             try
             {
-                natures = await natureRepos.GetAllNatures();
+                natures = await natureRepos.GetAllNaturesAsync();
             }
             catch (Exception ex)
             {

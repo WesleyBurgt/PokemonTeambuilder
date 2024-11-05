@@ -22,7 +22,7 @@ namespace PokémonTeambuilder.core.ApiServices
             {
                 ValidateBasePokemon(pokemon);
             }
-            pokemonRepos.SetBasePokemonList(basePokemons);
+            await pokemonRepos.SetBasePokemonListAsync(basePokemons);
         }
 
         private void ValidateBasePokemon(BasePokemon pokemon)

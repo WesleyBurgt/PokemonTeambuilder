@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
@@ -13,80 +14,74 @@ namespace PokémonTeambuilder.dal.Repos
         {
             this.context = context;
         }
-        public async Task<List<Typing>> GetAllTypings()
+        public async Task<List<Typing>> GetAllTypingsAsync()
         {
             List<Typing> typings = await context.Typings.ToListAsync();
             return typings;
         }
 
-        public void SetAllTypings(List<Typing> typings)
+        public async Task SetAllTypingsAsync(List<Typing> typings)
         {
-            // Cache all existing typings in memory
-            var existingTypings = context.Typings.ToDictionary(t => t.Id);
+            Dictionary<int, Typing> existingTypings = await context.Typings.ToDictionaryAsync(t => t.Id);
 
-            // Create new typings without duplicating entities
-            var typingsList = new List<Typing>();
-            foreach (var typing in typings)
+            List<Typing> typingsList = new List<Typing>();
+            foreach (Typing typing in typings)
             {
                 Typing typingToAdd;
 
-                if (existingTypings.TryGetValue(typing.Id, out var existingTyping))
+                if (existingTypings.TryGetValue(typing.Id, out Typing? existingTyping))
                 {
-                    typingToAdd = existingTyping; // Use the existing instance
+                    typingToAdd = existingTyping;
                 }
                 else
                 {
                     typingToAdd = new Typing { Id = typing.Id, Name = typing.Name, Relationships = new List<TypingRelationship>() };
-                    context.Typings.Add(typingToAdd); // Add new instance to context
+                    context.Typings.Add(typingToAdd);
                 }
 
                 typingsList.Add(typingToAdd);
             }
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            // Detach all tracked Typing entities before updating relationships to avoid duplicates
-            foreach (var entry in context.ChangeTracker.Entries<Typing>())
+            foreach (EntityEntry<Typing>? entry in context.ChangeTracker.Entries<Typing>())
             {
                 entry.State = EntityState.Detached;
             }
 
-            // Reattach typings to set relationships
-            foreach (var typing in typings)
+            foreach (Typing typing in typings)
             {
-                var mainTyping = typingsList.FirstOrDefault(t => t.Id == typing.Id);
+                Typing? mainTyping = typingsList.FirstOrDefault(t => t.Id == typing.Id);
 
-                // Ensure that Relationships is initialized
-                if (mainTyping.Relationships == null)
+                if (mainTyping != null)
                 {
-                    mainTyping.Relationships = new List<TypingRelationship>();
-                }
-
-                foreach (var typingRelationship in typing.Relationships)
-                {
-                    if (existingTypings.TryGetValue(typingRelationship.TypingId, out var existingTyping) &&
-                        existingTypings.TryGetValue(typingRelationship.RelatedTypingId, out var relatedTyping))
+                    if (mainTyping.Relationships == null)
                     {
-                        mainTyping.Relationships.Add(new TypingRelationship
+                        mainTyping.Relationships = new List<TypingRelationship>();
+                    }
+
+                    foreach (TypingRelationship typingRelationship in typing.Relationships)
+                    {
+                        if (existingTypings.TryGetValue(typingRelationship.TypingId, out Typing? existingTyping) &&
+                            existingTypings.TryGetValue(typingRelationship.RelatedTypingId, out Typing? relatedTyping))
                         {
-                            TypingId = typingRelationship.TypingId,
-                            Typing = existingTyping,
-                            RelatedTypingId = typingRelationship.RelatedTypingId,
-                            RelatedTyping = relatedTyping,
-                            Relation = typingRelationship.Relation
-                        });
+                            mainTyping.Relationships.Add(new TypingRelationship
+                            {
+                                TypingId = typingRelationship.TypingId,
+                                Typing = existingTyping,
+                                RelatedTypingId = typingRelationship.RelatedTypingId,
+                                RelatedTyping = relatedTyping,
+                                Relation = typingRelationship.Relation
+                            });
+                        }
+                        else
+                        {
+                            throw new Exception("Could not find typing relationships.");
+                        }
                     }
-                    else
-                    {
-                        throw new Exception("Could not find typing relationships.");
-                    }
+                    context.Typings.Update(mainTyping);
                 }
-                context.Typings.Update(mainTyping);
             }
-            try
-            {
-                context.SaveChanges();
-            }
-            catch (Exception ex) { }
+            await context.SaveChangesAsync();
         }
     }
 }

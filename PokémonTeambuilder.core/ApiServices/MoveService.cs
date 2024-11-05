@@ -22,7 +22,7 @@ namespace PokémonTeambuilder.core.ApiServices
             {
                 ValidateMove(move);
             }
-            moveRepos.SetAllMoves(moves);
+            await moveRepos.SetAllMovesAsync(moves);
         }
 
         private void ValidateMove(Move move)

@@ -22,7 +22,7 @@ namespace PokémonTeambuilder.core.ApiServices
             {
                 ValidateNature(nature);
             }
-            natureRepos.SetAllNatures(natures);
+            await natureRepos.SetAllNaturesAsync(natures);
         }
 
         private void ValidateNature(Nature nature)

@@ -14,17 +14,17 @@ namespace PokémonTeambuilder.dal.Repos
             this.context = context;
         }
 
-        public async Task<List<Item>> GetAllItems()
+        public async Task<List<Item>> GetAllItemsAsync()
         {
             List<Item> items = await context.Items.ToListAsync();
             return items;
         }
 
-        public async void SetAllItems(List<Item> items)
+        public async Task SetAllItemsAsync(List<Item> items)
         {
             foreach (Item item in items)
             {
-                if (context.Items.Any(i => i.Id == item.Id))
+                if (await context.Items.AnyAsync(i => i.Id == item.Id))
                 {
                     context.Items.Update(item);
                 }
@@ -33,7 +33,7 @@ namespace PokémonTeambuilder.dal.Repos
                     context.Items.Add(item);
                 }
             }
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

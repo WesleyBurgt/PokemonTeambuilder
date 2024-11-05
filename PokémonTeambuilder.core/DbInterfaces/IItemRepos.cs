@@ -4,7 +4,7 @@ namespace PokémonTeambuilder.core.DbInterfaces
 {
     public interface IItemRepos
     {
-        Task<List<Item>> GetAllItems();
-        void SetAllItems(List<Item> items);
+        Task<List<Item>> GetAllItemsAsync();
+        Task SetAllItemsAsync(List<Item> items);
     }
 }

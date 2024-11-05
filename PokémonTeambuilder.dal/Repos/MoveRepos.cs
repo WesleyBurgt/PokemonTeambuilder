@@ -14,21 +14,21 @@ namespace PokémonTeambuilder.dal.Repos
             this.context = context;
         }
 
-        public async Task<List<Move>> GetAllMoves()
+        public async Task<List<Move>> GetAllMovesAsync()
         {
             List<Move> moves = await context.Moves.ToListAsync();
             return moves;
         }
 
-        public async void SetAllMoves(List<Move> moves)
+        public async Task SetAllMovesAsync(List<Move> moves)
         {
             foreach (Move move in moves)
             {
-                if (context.Moves.Any(m => m.Id == move.Id))
+                if (await context.Moves.AnyAsync(m => m.Id == move.Id))
                 {
                     Typing typing = move.Typing;
 
-                    var existingTyping = context.Typings.FirstOrDefault(t => t.Id == typing.Id);
+                    Typing? existingTyping = await context.Typings.FirstOrDefaultAsync(t => t.Id == typing.Id);
 
                     if (existingTyping != null)
                     {
@@ -46,7 +46,7 @@ namespace PokémonTeambuilder.dal.Repos
                     context.Moves.Add(move);
                 }
             }
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

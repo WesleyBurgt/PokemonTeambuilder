@@ -14,17 +14,17 @@ namespace PokémonTeambuilder.dal.Repos
             this.context = context;
         }
 
-        public async Task<List<Ability>> GetAllAbilities()
+        public async Task<List<Ability>> GetAllAbilitiesAsync()
         {
             List<Ability> abilities = await context.Abilties.ToListAsync();
             return abilities;
         }
 
-        public void SetAllAbilities(List<Ability> abilities)
+        public async Task SetAllAbilitiesAsync(List<Ability> abilities)
         {
             foreach (Ability ability in abilities)
             {
-                if (context.Abilties.Any(a => a.Id == ability.Id))
+                if (await context.Abilties.AnyAsync(a => a.Id == ability.Id))
                 {
                     context.Abilties.Update(ability);
                 }
@@ -33,7 +33,7 @@ namespace PokémonTeambuilder.dal.Repos
                     context.Abilties.Add(ability);
                 }
             }
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

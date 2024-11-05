@@ -14,17 +14,17 @@ namespace PokémonTeambuilder.dal.Repos
             this.context = context;
         }
 
-        public async Task<List<Nature>> GetAllNatures()
+        public async Task<List<Nature>> GetAllNaturesAsync()
         {
             List<Nature> natures = await context.Natures.ToListAsync();
             return natures;
         }
 
-        public async void SetAllNatures(List<Nature> natures)
+        public async Task SetAllNaturesAsync(List<Nature> natures)
         {
             foreach (Nature nature in natures)
             {
-                if (context.Natures.Any(n => n.Id == nature.Id))
+                if (await context.Natures.AnyAsync(n => n.Id == nature.Id))
                 {
                     context.Natures.Update(nature);
                 }
@@ -33,7 +33,7 @@ namespace PokémonTeambuilder.dal.Repos
                     context.Natures.Add(nature);
                 }
             }
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

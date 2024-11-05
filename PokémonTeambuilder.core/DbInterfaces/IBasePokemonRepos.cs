@@ -4,7 +4,7 @@ namespace PokémonTeambuilder.core.DbInterfaces
 {
     public interface IBasePokemonRepos
     {
-        Task<List<BasePokemon>> GetBasePokemonList(int offset, int limit);
-        void SetBasePokemonList(List<BasePokemon> basePokemons);
+        Task<List<BasePokemon>> GetBasePokemonListAsync(int offset, int limit);
+        Task SetBasePokemonListAsync(List<BasePokemon> basePokemons);
     }
 }

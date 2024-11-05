@@ -17,7 +17,7 @@ namespace PokémonTeambuilder.core.Services
             List<BasePokemon> basePokemons = [];
             try
             {
-                basePokemons = await pokemonRepos.GetBasePokemonList(offset, limit);
+                basePokemons = await pokemonRepos.GetBasePokemonListAsync(offset, limit);
             }
             catch (Exception ex)
             {

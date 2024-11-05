@@ -22,7 +22,7 @@ namespace PokémonTeambuilder.core.ApiServices
             {
                 ValidateItem(item);
             }
-            itemRepos.SetAllItems(items);
+            await itemRepos.SetAllItemsAsync(items);
         }
 
         private void ValidateItem(Item item)

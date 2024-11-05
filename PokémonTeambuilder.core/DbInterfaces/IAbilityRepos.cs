@@ -4,7 +4,7 @@ namespace PokémonTeambuilder.core.DbInterfaces
 {
     public interface IAbilityRepos
     {
-        Task<List<Ability>> GetAllAbilities();
-        void SetAllAbilities(List<Ability> ability);
+        Task<List<Ability>> GetAllAbilitiesAsync();
+        Task SetAllAbilitiesAsync(List<Ability> ability);
     }
 }

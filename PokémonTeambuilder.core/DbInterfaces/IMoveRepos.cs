@@ -4,7 +4,7 @@ namespace PokémonTeambuilder.core.DbInterfaces
 {
     public interface IMoveRepos
     {
-        Task<List<Move>> GetAllMoves();
-        void SetAllMoves(List<Move> moves);
+        Task<List<Move>> GetAllMovesAsync();
+        Task SetAllMovesAsync(List<Move> moves);
     }
 }

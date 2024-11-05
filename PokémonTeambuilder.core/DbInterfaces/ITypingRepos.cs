@@ -4,8 +4,8 @@ namespace PokémonTeambuilder.core.DbInterfaces
 {
     public interface ITypingRepos
     {
-        Task<List<Typing>> GetAllTypings();
-        void SetAllTypings(List<Typing> typings);
+        Task<List<Typing>> GetAllTypingsAsync();
+        Task SetAllTypingsAsync(List<Typing> typings);
 
     }
 }

@@ -21,7 +21,7 @@ namespace PokémonTeambuilder.core.ApiServices
             {
                 ValidateTyping(typing);
             }
-            typingRepos.SetAllTypings(typings);
+            await typingRepos.SetAllTypingsAsync(typings);
         }
 
         private void ValidateTyping(Typing typing)
