@@ -4,6 +4,6 @@ namespace PokémonTeambuilder.core.ApiInterfaces
 {
     public interface INatureWrapper
     {
-        Task<List<Nature>> GetAllNatures();
+        Task<List<Nature>> GetAllNaturesAsync();
     }
 }

@@ -4,6 +4,6 @@ namespace PokémonTeambuilder.core.ApiInterfaces
 {
     public interface ITypingWrapper
     {
-        Task<List<Typing>> GetAllTypings();
+        Task<List<Typing>> GetAllTypingsAsync();
     }
 }

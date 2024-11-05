@@ -21,7 +21,7 @@ namespace PokémonTeambuilder.core.Services
             }
             catch (Exception ex)
             {
-                return [];
+                throw new Exception("could not get Natures");
             }
 
             foreach (Nature nature in natures)

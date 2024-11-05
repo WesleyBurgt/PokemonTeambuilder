@@ -24,7 +24,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<int> GetPokemonCount()
+        public async Task<int> GetPokemonCountAsync()
         {
             HttpResponseMessage response = await client.GetAsync($"pokemon?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)
@@ -38,14 +38,14 @@ namespace PokémonTeambuilder.apiwrapper
             return pokemonCount;
         }
 
-        public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
+        public async Task<List<BasePokemon>> GetPokemonListAsync(int offset, int limit)
         {
             if (offset < 0)
             {
                 throw new Exception("offset must be 0 or more"); //TODO: custom exception
             }
 
-            int pokemonCount = await GetPokemonCount();
+            int pokemonCount = await GetPokemonCountAsync();
             if (limit > pokemonCount)
             {
                 limit = pokemonCount;
@@ -67,7 +67,7 @@ namespace PokémonTeambuilder.apiwrapper
 
             }).ToList();
 
-            typings = await typingWrapper.GetAllTypings();
+            typings = await typingWrapper.GetAllTypingsAsync();
             List<BasePokemon> pokemons = [];
             List<Task<BasePokemon>> tasks = new List<Task<BasePokemon>>();
             foreach (int id in ids)

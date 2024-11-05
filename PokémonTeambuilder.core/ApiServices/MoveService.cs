@@ -15,9 +15,9 @@ namespace PokémonTeambuilder.core.ApiServices
             this.moveRepos = moveRepos;
         }
 
-        public async Task GetAllMovesAndSaveThem()
+        public async Task FetchAndSaveMovesAsync()
         {
-            List<Move> moves = await moveWrapper.GetAllMoves();
+            List<Move> moves = await moveWrapper.GetAllMovesAsync();
             foreach (Move move in moves)
             {
                 ValidateMove(move);

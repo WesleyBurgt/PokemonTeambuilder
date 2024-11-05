@@ -15,9 +15,9 @@ namespace PokémonTeambuilder.core.ApiServices
             this.natureRepos = natureRepos;
         }
 
-        public async Task GetAllNaturesAndSaveThem()
+        public async Task FetchAndSaveNaturesAsync()
         {
-            List<Nature> natures = await natureWrapper.GetAllNatures();
+            List<Nature> natures = await natureWrapper.GetAllNaturesAsync();
             foreach (Nature nature in natures)
             {
                 ValidateNature(nature);

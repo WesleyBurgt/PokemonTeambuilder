@@ -21,7 +21,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<Typing>> GetAllTypings()
+        public async Task<List<Typing>> GetAllTypingsAsync()
         {
             HttpResponseMessage response = await client.GetAsync($"type");
             if (!response.IsSuccessStatusCode)

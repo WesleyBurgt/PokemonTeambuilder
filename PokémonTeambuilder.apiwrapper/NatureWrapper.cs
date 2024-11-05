@@ -21,9 +21,9 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<Nature>> GetAllNatures()
+        public async Task<List<Nature>> GetAllNaturesAsync()
         {
-            int NatureCount = await GetNatureCount();
+            int NatureCount = await GetNatureCountAsync();
 
             HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit={NatureCount}");
             if (!response.IsSuccessStatusCode)
@@ -60,7 +60,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        private async Task<int> GetNatureCount()
+        private async Task<int> GetNatureCountAsync()
         {
             HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)

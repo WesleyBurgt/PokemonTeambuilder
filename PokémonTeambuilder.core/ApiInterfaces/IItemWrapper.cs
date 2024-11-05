@@ -4,7 +4,6 @@ namespace PokémonTeambuilder.core.ApiInterfaces
 {
     public interface IItemWrapper
     {
-        Task<List<Item>> GetAllItems();
-
+        Task<List<Item>> GetAllItemsAsync();
     }
 }

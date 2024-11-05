@@ -4,7 +4,6 @@ namespace PokémonTeambuilder.core.ApiInterfaces
 {
     public interface IAbilityWrapper
     {
-        Task<List<Ability>> GetAllAbilities();
-
+        Task<List<Ability>> GetAllAbilitiesAsync();
     }
 }

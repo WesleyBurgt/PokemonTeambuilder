@@ -15,9 +15,9 @@ namespace PokémonTeambuilder.core.ApiServices
             this.pokemonRepos = pokemonRepos;
         }
 
-        public async Task GetAllBasePokemonAndSaveThem()
+        public async Task FetchAndSaveBasePokemonsAsync()
         {
-            List<BasePokemon> basePokemons = await pokemonWrapper.GetPokemonList(0, 10); //TODO: change to int.MaxValue
+            List<BasePokemon> basePokemons = await pokemonWrapper.GetPokemonListAsync(0, 10); //TODO: change to int.MaxValue
             foreach (BasePokemon pokemon in basePokemons)
             {
                 ValidateBasePokemon(pokemon);

@@ -15,9 +15,9 @@ namespace PokémonTeambuilder.core.ApiServices
             this.itemRepos = itemRepos;
         }
 
-        public async Task GetAllItemsAndSaveThem()
+        public async Task FetchAndSaveItemsAsync()
         {
-            List<Item> items = await itemWrapper.GetAllItems();
+            List<Item> items = await itemWrapper.GetAllItemsAsync();
             foreach (Item item in items)
             {
                 ValidateItem(item);

@@ -14,9 +14,9 @@ namespace PokémonTeambuilder.core.ApiServices
             this.typingRepos = typingRepos;
         }
 
-        public async Task GetAllTypingsAndSaveThem()
+        public async Task FetchAndSaveTypingsAsync()
         {
-            List<Typing> typings = await typingWrapper.GetAllTypings();
+            List<Typing> typings = await typingWrapper.GetAllTypingsAsync();
             foreach (Typing typing in typings)
             {
                 ValidateTyping(typing);

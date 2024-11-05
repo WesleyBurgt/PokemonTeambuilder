@@ -21,9 +21,9 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<Move>> GetAllMoves()
+        public async Task<List<Move>> GetAllMovesAsync()
         {
-            int MoveCount = await GetMoveCount();
+            int MoveCount = await GetMoveCountAsync();
 
             HttpResponseMessage response = await client.GetAsync($"move?offset=0&limit={MoveCount}");
             if (!response.IsSuccessStatusCode)
@@ -60,7 +60,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        private async Task<int> GetMoveCount()
+        private async Task<int> GetMoveCountAsync()
         {
             HttpResponseMessage response = await client.GetAsync($"move?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)

@@ -4,7 +4,6 @@ namespace PokémonTeambuilder.core.ApiInterfaces
 {
     public interface IMoveWrapper
     {
-        Task<List<Move>> GetAllMoves();
-
+        Task<List<Move>> GetAllMovesAsync();
     }
 }

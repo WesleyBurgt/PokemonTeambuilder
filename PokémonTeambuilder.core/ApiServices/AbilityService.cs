@@ -15,9 +15,9 @@ namespace PokémonTeambuilder.core.ApiServices
             this.abilityRepos = abilityRepos;
         }
 
-        public async Task GetAllAbilitysAndSaveThem()
+        public async Task FetchAndSaveAbilitiesAsync()
         {
-            List<Ability> abilitys = await abilityWrapper.GetAllAbilities();
+            List<Ability> abilitys = await abilityWrapper.GetAllAbilitiesAsync();
             foreach (Ability ability in abilitys)
             {
                 ValidateAbility(ability);

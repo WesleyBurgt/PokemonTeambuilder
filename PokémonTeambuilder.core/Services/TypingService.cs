@@ -1,28 +1,43 @@
 ﻿using PokémonTeambuilder.core.ApiInterfaces;
+using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
 {
     public class TypingService
     {
-        private readonly ITypingWrapper typingWrapper;
-        public TypingService(ITypingWrapper typingWrapper)
+        private readonly ITypingRepos typingRepos;
+        public TypingService(ITypingRepos typingRepos)
         {
-            this.typingWrapper = typingWrapper;
+            this.typingRepos = typingRepos;
         }
 
-        public async Task<List<Typing>> GetAllTypingsFromApi()
+        public async Task<List<Typing>> GetAllTypingsAsync()
         {
-            List<Typing> list = await typingWrapper.GetAllTypings();
-            foreach (Typing typing in list)
+            List<Typing> typings = [];
+            try
             {
-                //TODO: make custom Exceptions
-                if (typing.Id <= 0)
-                    throw new Exception("Typing Id cannot be" + typing.Id);
-                if (string.IsNullOrEmpty(typing.Name))
-                    throw new Exception("Typing Name cannot be null or empty");
+                typings = await typingRepos.GetAllTypingsAsync();
             }
-            return list;
+            catch (Exception ex)
+            {
+                throw new Exception("could not get Typings");
+            }
+
+            foreach (Typing typing in typings)
+            {
+                ValidateTyping(typing);
+            }
+            return typings;
+        }
+
+        private void ValidateTyping(Typing typing)
+        {
+            //TODO: make custom Exceptions
+            if (typing.Id <= 0)
+                throw new Exception("Typing Id cannot be" + typing.Id);
+            if (string.IsNullOrEmpty(typing.Name))
+                throw new Exception("Typing Name cannot be null or empty");
         }
     }
 }

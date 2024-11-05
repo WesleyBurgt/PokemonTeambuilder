@@ -20,9 +20,9 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<Ability>> GetAllAbilities()
+        public async Task<List<Ability>> GetAllAbilitiesAsync()
         {
-            int AbilityCount = await GetAbilityCount();
+            int AbilityCount = await GetAbilityCountAsync();
 
             HttpResponseMessage response = await client.GetAsync($"ability?offset=0&limit={AbilityCount}");
             if (!response.IsSuccessStatusCode)
@@ -60,7 +60,7 @@ namespace PokémonTeambuilder.apiwrapper
 
         }
 
-        private async Task<int> GetAbilityCount()
+        private async Task<int> GetAbilityCountAsync()
         {
             HttpResponseMessage response = await client.GetAsync($"ability?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)
