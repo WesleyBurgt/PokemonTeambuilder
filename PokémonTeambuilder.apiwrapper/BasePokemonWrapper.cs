@@ -9,7 +9,6 @@ namespace PokémonTeambuilder.apiwrapper
     {
         static HttpClient client = new HttpClient();
 
-        private bool multiplePokemonFetches = false;
         private TypingWrapper typingWrapper = new TypingWrapper();
         private List<Typing> typings = [];
 
@@ -38,21 +37,11 @@ namespace PokémonTeambuilder.apiwrapper
             return pokemonCount;
         }
 
-        public async Task<List<BasePokemon>> GetPokemonListAsync(int offset, int limit)
+        public async Task<List<BasePokemon>> GetAllBasePokemonsAsync()
         {
-            if (offset < 0)
-            {
-                throw new Exception("offset must be 0 or more"); //TODO: custom exception
-            }
-
             int pokemonCount = await GetPokemonCountAsync();
-            if (limit > pokemonCount)
-            {
-                limit = pokemonCount;
-            }
-            multiplePokemonFetches = limit > 1;
 
-            HttpResponseMessage response = await client.GetAsync($"pokemon?offset={offset}&limit={limit}");
+            HttpResponseMessage response = await client.GetAsync($"pokemon?offset=0&limit={pokemonCount}");
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Could not get response from api"); //TODO: custom exception
@@ -116,26 +105,17 @@ namespace PokémonTeambuilder.apiwrapper
             {
                 JToken typeToken = type["type"];
                 string typeName = typeToken["name"].ToString();
-                if (multiplePokemonFetches)
+                Typing? typing = typings.FirstOrDefault(t => t.Name == typeName);
+                if (typing != null)
                 {
-                    Typing typing = typings.FirstOrDefault(t => t.Name == typeName);
-                    if (typing != null)
-                    {
-                        types.Add(typing);
-                    }
-                    else
-                    {
-                        int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
-                        typing = await typingWrapper.GetTypingById(typeId);
-                        types.Add(typing);
-                        typings.Add(typing);
-                    }
+                    types.Add(typing);
                 }
                 else
                 {
                     int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
-                    Typing typing = await typingWrapper.GetTypingById(typeId);
+                    typing = await typingWrapper.GetTypingById(typeId);
                     types.Add(typing);
+                    typings.Add(typing);
                 }
             }
             pokemon.Typings = types;
