@@ -1,6 +1,5 @@
 ﻿using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
-using System.Collections.Generic;
 
 namespace PokémonTeambuilder.core.Services
 {

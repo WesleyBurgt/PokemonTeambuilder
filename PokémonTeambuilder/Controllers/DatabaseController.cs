@@ -3,7 +3,6 @@ using PokémonTeambuilder.apiwrapper;
 using PokémonTeambuilder.core.ApiServices;
 using PokémonTeambuilder.dal.DbContext;
 using PokémonTeambuilder.dal.Repos;
-using System.Diagnostics;
 
 namespace PokémonTeambuilder.Controllers
 {

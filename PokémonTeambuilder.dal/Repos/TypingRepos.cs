@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
@@ -31,18 +30,16 @@ namespace PokémonTeambuilder.dal.Repos
 
         public async Task SetAllTypingsAsync(List<Typing> typings)
         {
-            // Load all existing typings into a dictionary
             Dictionary<int, Typing> existingTypings = await context.Typings
                 .Include(t => t.Relationships)
-                .ThenInclude(tr => tr.RelatedTyping) // Ensure relationships are included
+                .ThenInclude(tr => tr.RelatedTyping)
                 .ToDictionaryAsync(t => t.Id);
 
-            // Add or update Typings in the database
             foreach (Typing typing in typings)
             {
                 if (existingTypings.TryGetValue(typing.Id, out Typing? existingTyping))
                 {
-                    existingTyping.Name = typing.Name; // Update name if needed
+                    existingTyping.Name = typing.Name;
                 }
                 else
                 {
@@ -58,12 +55,10 @@ namespace PokémonTeambuilder.dal.Repos
             }
             await context.SaveChangesAsync();
 
-            // Update Relationships for each Typing
             foreach (Typing typing in typings)
             {
                 if (existingTypings.TryGetValue(typing.Id, out Typing? mainTyping))
                 {
-                    // Clear existing relationships to avoid duplicates
                     mainTyping.Relationships.Clear();
 
                     foreach (TypingRelationship typingRelationship in typing.Relationships)

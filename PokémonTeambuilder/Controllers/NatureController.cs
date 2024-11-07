@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.core.Services;
 using PokémonTeambuilder.dal.DbContext;
@@ -56,6 +55,5 @@ namespace PokémonTeambuilder.Controllers
                 Down = nature.Down != null ? char.ToLower(nature.Down.ToString()[0]) + nature.Down.ToString().Substring(1) : null,
             };
         }
-
     }
 }

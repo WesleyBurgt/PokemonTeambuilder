@@ -5,7 +5,6 @@ using PokémonTeambuilder.core.Services;
 using PokémonTeambuilder.dal.DbContext;
 using PokémonTeambuilder.dal.Repos;
 using PokémonTeambuilder.DTOs;
-using System.Net.NetworkInformation;
 
 namespace PokémonTeambuilder.Controllers
 {

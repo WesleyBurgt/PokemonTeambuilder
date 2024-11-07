@@ -1,5 +1,4 @@
-﻿using PokémonTeambuilder.core.ApiInterfaces;
-using PokémonTeambuilder.core.DbInterfaces;
+﻿using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services

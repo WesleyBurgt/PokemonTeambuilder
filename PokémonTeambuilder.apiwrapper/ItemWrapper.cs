@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using PokémonTeambuilder.core.ApiInterfaces;
-using PokémonTeambuilder.core.Enums;
 using PokémonTeambuilder.core.Models;
 using System.Net.Http.Headers;
 
