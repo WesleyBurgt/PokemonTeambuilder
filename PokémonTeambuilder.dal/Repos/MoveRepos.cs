@@ -24,21 +24,20 @@ namespace PokémonTeambuilder.dal.Repos
         {
             foreach (Move move in moves)
             {
+                Typing typing = move.Typing;
+                Typing? existingTyping = await context.Typings.FirstOrDefaultAsync(t => t.Id == typing.Id);
+
+                if (existingTyping != null)
+                {
+                    move.Typing = existingTyping;
+                }
+                else
+                {
+                    throw new Exception("Typing is not in database");
+                }
+
                 if (await context.Moves.AnyAsync(m => m.Id == move.Id))
                 {
-                    Typing typing = move.Typing;
-
-                    Typing? existingTyping = await context.Typings.FirstOrDefaultAsync(t => t.Id == typing.Id);
-
-                    if (existingTyping != null)
-                    {
-                        move.Typing = existingTyping;
-                    }
-                    else
-                    {
-                        throw new Exception("Typing is not in database");
-                    }
-
                     context.Moves.Update(move);
                 }
                 else

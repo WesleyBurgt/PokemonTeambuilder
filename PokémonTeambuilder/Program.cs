@@ -16,6 +16,12 @@ namespace PokémonTeambuilder
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddHttpClient("CustomClient")
+                .ConfigureHttpClient(client =>
+                {
+                    client.Timeout = TimeSpan.FromMinutes(5);
+                });
+
             var connectionString = builder.Configuration.GetConnectionString("PokemonBuilderDatabaseConnectionString");
 
             builder.Services.AddDbContext<PokemonTeambuilderDbContext>(options =>

@@ -20,6 +20,7 @@ namespace PokémonTeambuilder.core.ApiServices
             List<BasePokemon> basePokemons = await pokemonWrapper.GetAllBasePokemonsAsync();
             foreach (BasePokemon pokemon in basePokemons)
             {
+                RemoveDuplicateAbilities(pokemon);
                 ValidateBasePokemon(pokemon);
             }
             await pokemonRepos.SetBasePokemonListAsync(basePokemons);
@@ -48,6 +49,20 @@ namespace PokémonTeambuilder.core.ApiServices
                 throw new Exception("Pokemon Speed cannot be" + pokemon.BaseStats.Speed);
             if (pokemon.Abilities.Count <= 0)
                 throw new Exception("Pokemon cannot have no abilities");
+        }
+
+        private bool HasDuplicateAbilities(BasePokemon pokemon)
+        {
+            return pokemon.Abilities.GroupBy(ability => ability.AbilityId).Any(group => group.Count() > 1);
+        }
+
+        private void RemoveDuplicateAbilities(BasePokemon pokemon)
+        {
+            if (HasDuplicateAbilities(pokemon))
+            {
+                pokemon.Abilities = pokemon.Abilities.GroupBy(ability => ability.AbilityId)
+                    .Select(group => group.OrderBy(item => item.Slot).FirstOrDefault()).ToList();
+            }
         }
     }
 }

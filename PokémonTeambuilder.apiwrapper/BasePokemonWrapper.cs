@@ -110,13 +110,6 @@ namespace PokémonTeambuilder.apiwrapper
                 {
                     types.Add(typing);
                 }
-                else
-                {
-                    int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
-                    typing = await typingWrapper.GetTypingById(typeId);
-                    types.Add(typing);
-                    typings.Add(typing);
-                }
             }
             pokemon.Typings = types;
 

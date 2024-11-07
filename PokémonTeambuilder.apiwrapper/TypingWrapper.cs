@@ -23,7 +23,8 @@ namespace PokémonTeambuilder.apiwrapper
 
         public async Task<List<Typing>> GetAllTypingsAsync()
         {
-            HttpResponseMessage response = await client.GetAsync($"type");
+            int typingCount = await GetTypingCountAsync();
+            HttpResponseMessage response = await client.GetAsync($"type?offset=0&limit={typingCount}");
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Could not get response from api"); //TODO: custom exception
@@ -43,7 +44,7 @@ namespace PokémonTeambuilder.apiwrapper
             List<Task<Typing>> tasks = new List<Task<Typing>>();
             foreach (int id in ids)
             {
-                tasks.Add(GetTypingById(id));
+                tasks.Add(GetTypingAsync(id));
             }
             Typing[] typingsArray = await Task.WhenAll(tasks);
             typings = typingsArray.ToList();
@@ -58,13 +59,27 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
+        private async Task<int> GetTypingCountAsync()
+        {
+            HttpResponseMessage response = await client.GetAsync($"type?offset=0&limit=1");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            JObject jsonObject = JObject.Parse(json);
+            int typingCount = (int)jsonObject["count"];
+            return typingCount;
+        }
+
         private int GetIdOutOfUrl(string url)
         {
             string[] urlParts = url.Split('/');
             return int.Parse(urlParts[^2]);
         }
 
-        public async Task<Typing> GetTypingById(int id)
+        private async Task<Typing> GetTypingAsync(int id)
         {
             HttpResponseMessage response = await client.GetAsync($"type/{id}");
             if (!response.IsSuccessStatusCode)

@@ -24,52 +24,142 @@ namespace PokémonTeambuilder.dal.Repos
         {
             foreach (BasePokemon basePokemon in basePokemons)
             {
-                List<Typing> typingsList = basePokemon.Typings.ToList();
-                for (int i = 0; i < typingsList.Count; i++)
+                if (BasePokemonIsInDatabase(basePokemon))
                 {
-                    Typing typing = typingsList[i];
-
-                    Typing? existingTyping = await context.Typings.FirstOrDefaultAsync(t => t.Id == typing.Id);
-
-                    if (existingTyping != null)
-                    {
-                        typingsList[i] = existingTyping;
-                    }
-                    else
-                    {
-                        throw new Exception("Typing is not in database");
-                    }
-                }
-                basePokemon.Typings = typingsList;
-
-                List<BasePokemonAbility> abilityList = basePokemon.Abilities.ToList();
-                for (int i = 0; i < abilityList.Count; i++)
-                {
-                    BasePokemonAbility ability = abilityList[i];
-
-                    BasePokemonAbility? existingAbility = await context.BasePokemonAbilities.FirstOrDefaultAsync(a => a.AbilityId == ability.AbilityId && a.BasePokemonId == ability.BasePokemonId);
-
-                    if (existingAbility != null)
-                    {
-                        abilityList[i] = existingAbility;
-                    }
-                    else
-                    {
-                        throw new Exception("BasePokemonAbility is not in database");
-                    }
-                }
-                basePokemon.Abilities = abilityList;
-
-                if (await context.BasePokemons.AnyAsync(bp => bp.Id == basePokemon.Id))
-                {
-                    context.BasePokemons.Update(basePokemon);
+                    await UpdateExistingBasePokemon(basePokemon);
                 }
                 else
                 {
-                    context.BasePokemons.Add(basePokemon);
+                    await AddBasePokemon(basePokemon);
                 }
             }
             await context.SaveChangesAsync();
+        }
+
+        private bool BasePokemonIsInDatabase(BasePokemon basePokemon)
+        {
+            return context.BasePokemons.Any(bp => bp.Id == basePokemon.Id);
+        }
+
+        private async Task AddBasePokemon(BasePokemon basePokemon)
+        {
+            if (!BasePokemonIsInDatabase(basePokemon))
+            {
+                List<Typing> typings = await GetTypingsFromDatabase(basePokemon);
+                List<BasePokemonAbility> basePokemonAbilities = await GetBasePokemonAbilitiesFromDatabase(basePokemon);
+                List<Move> moves = await GetMovesFromDatabase(basePokemon);
+
+                basePokemon.Typings = typings;
+                basePokemon.Abilities = basePokemonAbilities;
+                basePokemon.Moves = moves;
+
+                context.BasePokemons.Add(basePokemon);
+            }
+        }
+
+        private async Task UpdateExistingBasePokemon(BasePokemon basePokemon)
+        {
+            BasePokemon? existingBasePokemon = await context.BasePokemons
+                .Include(bp => bp.Typings)
+                .Include(bp => bp.Abilities)
+                .Include(bp => bp.Moves)
+                .FirstOrDefaultAsync(bp => bp.Id == basePokemon.Id);
+
+            if (existingBasePokemon != null)
+            {
+                List<Typing> typings = await GetTypingsFromDatabase(basePokemon);
+                List<BasePokemonAbility> basePokemonAbilities = await GetBasePokemonAbilitiesFromDatabase(basePokemon);
+                List<Move> moves = await GetMovesFromDatabase(basePokemon);
+
+                existingBasePokemon.Typings = typings;
+                existingBasePokemon.Abilities = basePokemonAbilities;
+                UpdateMovesExistingBasePokemon(existingBasePokemon, moves);
+
+                context.BasePokemons.Update(existingBasePokemon);
+            }
+        }
+
+        private void UpdateMovesExistingBasePokemon(BasePokemon existingBasePokemon, List<Move> moves)
+        {
+            existingBasePokemon.Moves = existingBasePokemon.Moves
+                .Where(em => moves.Any(m => m.Id == em.Id))
+                .ToList();
+            List<Move> newMoves = moves.Where(m => !existingBasePokemon.Moves.Any(em => em.Id == m.Id)).ToList();
+            foreach (Move move in newMoves)
+            {
+                existingBasePokemon.Moves.Add(move);
+            }
+        }
+
+        private async Task<List<Typing>> GetTypingsFromDatabase(BasePokemon basePokemon)
+        {
+            List<Typing> typingList = basePokemon.Typings.ToList();
+            for (int i = 0; i < typingList.Count; i++)
+            {
+                Typing typing = typingList[i];
+
+                Typing? existingTyping = await context.Typings.FirstOrDefaultAsync(t => t.Id == typing.Id);
+
+                if (existingTyping != null)
+                {
+                    typingList[i] = existingTyping;
+                }
+                else
+                {
+                    throw new Exception("Typing is not in database");
+                }
+            }
+            return typingList;
+        }
+
+        private async Task<List<BasePokemonAbility>> GetBasePokemonAbilitiesFromDatabase(BasePokemon basePokemon)
+        {
+            List<BasePokemonAbility> basePokemonAbilityList = basePokemon.Abilities.ToList();
+            for (int i = 0; i < basePokemonAbilityList.Count; i++)
+            {
+                BasePokemonAbility basePokemonAbility = basePokemonAbilityList[i];
+
+                BasePokemonAbility? existingBasePokemonAbility = await context.BasePokemonAbilities.FirstOrDefaultAsync(a => a.AbilityId == basePokemonAbility.AbilityId && a.BasePokemonId == basePokemonAbility.BasePokemonId);
+
+                if (existingBasePokemonAbility != null)
+                {
+                    basePokemonAbilityList[i] = existingBasePokemonAbility;
+                }
+                else
+                {
+                    Ability? existingAbility = context.Abilties.FirstOrDefault(a => a.Id == basePokemonAbility.AbilityId);
+                    if (existingAbility != null)
+                    {
+                        basePokemonAbility.Ability = existingAbility;
+                    }
+                    else
+                    {
+                        throw new Exception("Ability is not in database");
+                    }
+                }
+            }
+            return basePokemonAbilityList;
+        }
+
+        private async Task<List<Move>> GetMovesFromDatabase(BasePokemon basePokemon)
+        {
+            List<Move> moveList = basePokemon.Moves.ToList();
+            for (int i = 0; i < moveList.Count; i++)
+            {
+                Move move = moveList[i];
+
+                Move? existingMove = await context.Moves.FirstOrDefaultAsync(m => m.Id == move.Id);
+
+                if (existingMove != null)
+                {
+                    moveList[i] = existingMove;
+                }
+                else
+                {
+                    throw new Exception("Move is not in database");
+                }
+            }
+            return moveList;
         }
     }
 }

@@ -93,21 +93,21 @@ namespace PokémonTeambuilder.apiwrapper
 
             int? accuracy = null;
             JToken accuracyToken = jsonObject["accuracy"];
-            if (accuracyToken != null)
+            if (accuracyToken != null && accuracyToken.HasValues)
             {
                 accuracy = int.Parse(accuracyToken.ToString());
             }
 
             int? basePower = null;
             JToken powerToken = jsonObject["power"];
-            if (powerToken != null)
+            if (powerToken != null && powerToken.HasValues)
             {
                 basePower = int.Parse(powerToken.ToString());
             }
 
             int? pp = null;
             JToken ppToken = jsonObject["pp"];
-            if (ppToken != null)
+            if (ppToken != null && ppToken.HasValues)
             {
                 pp = int.Parse(ppToken.ToString());
             }
