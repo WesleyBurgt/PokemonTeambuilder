@@ -2,6 +2,7 @@
 using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
+using System.Formats.Asn1;
 
 namespace PokémonTeambuilder.dal.Repos
 {
@@ -31,6 +32,12 @@ namespace PokémonTeambuilder.dal.Repos
                 .Take(limit)
                 .ToListAsync();
             return basePokemons;
+        }
+
+        public async Task<int> GetBasePokemonCountAsync()
+        {
+            int count = await context.BasePokemons.CountAsync();
+            return count;
         }
 
         public async Task SetBasePokemonListAsync(List<BasePokemon> basePokemons)

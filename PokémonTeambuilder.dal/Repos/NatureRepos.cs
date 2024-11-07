@@ -20,6 +20,12 @@ namespace PokémonTeambuilder.dal.Repos
             return natures;
         }
 
+        public async Task<int> GetNatureCountAsync()
+        {
+            int count = await context.Natures.CountAsync();
+            return count;
+        }
+
         public async Task SetAllNaturesAsync(List<Nature> natures)
         {
             foreach (Nature nature in natures)

@@ -24,14 +24,21 @@ namespace PokémonTeambuilder.Controllers
         {
             try
             {
-                List<Nature> Natures = await natureService.GetAllNatures();
+                List<Nature> Natures = await natureService.GetAllNaturesAsync();
+                int count = await natureService.GetNatureCountAsync();
                 List<NatureDto> natureDtos = new List<NatureDto>();
 
                 foreach (Nature nature in Natures)
                 {
                     natureDtos.Add(MapNatureToDto(nature));
                 }
-                return Ok(natureDtos);
+
+                ApiListResponse response = new ApiListResponse
+                {
+                    Results = natureDtos,
+                    Count = count
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {

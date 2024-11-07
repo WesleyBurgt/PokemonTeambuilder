@@ -12,7 +12,7 @@ namespace PokémonTeambuilder.core.Services
             this.pokemonRepos = pokemonRepos;
         }
 
-        public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
+        public async Task<List<BasePokemon>> GetBasePokemonListAsync(int offset, int limit)
         {
             List<BasePokemon> basePokemons = [];
             try
@@ -29,6 +29,19 @@ namespace PokémonTeambuilder.core.Services
                 ValidateBasePokemon(basePokemon);
             }
             return basePokemons;
+        }
+
+        public async Task<int> GetBasePokemonCountAsync()
+        {
+            try
+            {
+                int count = await pokemonRepos.GetBasePokemonCountAsync();
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("could not get BasePokemon count");
+            }
         }
 
         private void ValidateBasePokemon(BasePokemon pokemon)

@@ -12,7 +12,7 @@ namespace PokémonTeambuilder.core.Services
             this.natureRepos = natureRepos;
         }
 
-        public async Task<List<Nature>> GetAllNatures()
+        public async Task<List<Nature>> GetAllNaturesAsync()
         {
             List<Nature> natures = [];
             try
@@ -29,6 +29,19 @@ namespace PokémonTeambuilder.core.Services
                 ValidateNature(nature);
             }
             return natures;
+        }
+
+        public async Task<int> GetNatureCountAsync()
+        {
+            try
+            {
+                int result = await natureRepos.GetNatureCountAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("could not get Nature count");
+            }
         }
 
         private void ValidateNature(Nature nature)

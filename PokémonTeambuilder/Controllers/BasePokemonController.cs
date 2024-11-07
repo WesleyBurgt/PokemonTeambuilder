@@ -11,11 +11,11 @@ namespace PokémonTeambuilder.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class PokemonController : ControllerBase
+    public class BasePokemonController : ControllerBase
     {
         private readonly BasePokemonService basePokemonService;
 
-        public PokemonController(PokemonTeambuilderDbContext context)
+        public BasePokemonController(PokemonTeambuilderDbContext context)
         {
             basePokemonService = new BasePokemonService(new BasePokemonRepos(context));
         }
@@ -25,14 +25,21 @@ namespace PokémonTeambuilder.Controllers
         {
             try
             {
-                List<BasePokemon> basePokemons = await basePokemonService.GetPokemonList(offset, limit);
+                List<BasePokemon> basePokemons = await basePokemonService.GetBasePokemonListAsync(offset, limit);
+                int count = await basePokemonService.GetBasePokemonCountAsync();
                 List<BasePokemonDto> basePokemonDtos = new List<BasePokemonDto>();
 
                 foreach (BasePokemon basePokemon in basePokemons)
                 {
                     basePokemonDtos.Add(MapBasePokemonToDto(basePokemon));
                 }
-                return Ok(basePokemonDtos);
+
+                ApiListResponse response = new ApiListResponse
+                {
+                    Results = basePokemonDtos,
+                    Count = count
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
