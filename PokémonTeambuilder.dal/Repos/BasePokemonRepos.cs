@@ -16,7 +16,20 @@ namespace PokémonTeambuilder.dal.Repos
 
         public async Task<List<BasePokemon>> GetBasePokemonListAsync(int offset, int limit)
         {
-            List<BasePokemon> basePokemons = await context.BasePokemons.ToListAsync();
+            List<BasePokemon> basePokemons = await context.BasePokemons
+                .Include(bp => bp.Typings)
+                    .ThenInclude(t => t.Relationships)
+                        .ThenInclude(tr => tr.RelatedTyping)
+                .Include(bp => bp.Abilities)
+                    .ThenInclude(a => a.Ability)
+                .Include(bp => bp.Moves)
+                    .ThenInclude(m => m.Typing)
+                        .ThenInclude(t => t.Relationships)
+                            .ThenInclude(tr => tr.RelatedTyping)
+                .Include(bp => bp.BaseStats)
+                .Skip(offset)
+                .Take(limit)
+                .ToListAsync();
             return basePokemons;
         }
 
@@ -63,6 +76,7 @@ namespace PokémonTeambuilder.dal.Repos
                 .Include(bp => bp.Typings)
                 .Include(bp => bp.Abilities)
                 .Include(bp => bp.Moves)
+                .Include(bp => bp.BaseStats)
                 .FirstOrDefaultAsync(bp => bp.Id == basePokemon.Id);
 
             if (existingBasePokemon != null)

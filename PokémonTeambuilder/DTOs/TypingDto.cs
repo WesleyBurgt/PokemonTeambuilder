@@ -7,6 +7,5 @@
         public List<TypingRelationlessDto> Weaknesses { get; set; }
         public List<TypingRelationlessDto> Resistances { get; set; }
         public List<TypingRelationlessDto> Immunities { get; set; }
-
     }
 }

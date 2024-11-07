@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.core.Services;
 using PokémonTeambuilder.dal.DbContext;
 using PokémonTeambuilder.dal.Repos;
+using PokémonTeambuilder.DTOs;
 
 namespace PokémonTeambuilder.Controllers
 {
@@ -22,13 +24,31 @@ namespace PokémonTeambuilder.Controllers
         {
             try
             {
-                List<Nature> list = await natureService.GetAllNatures();
-                return Ok(list);
+                List<Nature> Natures = await natureService.GetAllNatures();
+                List<NatureDto> natureDtos = new List<NatureDto>();
+
+                foreach (Nature nature in Natures)
+                {
+                    natureDtos.Add(MapNatureToDto(nature));
+                }
+                return Ok(natureDtos);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
+
+        private NatureDto MapNatureToDto(Nature nature)
+        {
+            return new NatureDto
+            {
+                Id = nature.Id,
+                Name = nature.Name,
+                Up = nature.Up != null ? char.ToLower(nature.Up.ToString()[0]) + nature.Up.ToString().Substring(1) : null,
+                Down = nature.Down != null ? char.ToLower(nature.Down.ToString()[0]) + nature.Down.ToString().Substring(1) : null,
+            };
+        }
+
     }
 }

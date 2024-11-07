@@ -22,60 +22,57 @@ namespace PokémonTeambuilder.dal.Repos
 
         public async Task SetAllTypingsAsync(List<Typing> typings)
         {
-            Dictionary<int, Typing> existingTypings = await context.Typings.ToDictionaryAsync(t => t.Id);
+            // Load all existing typings into a dictionary
+            Dictionary<int, Typing> existingTypings = await context.Typings
+                .Include(t => t.Relationships)
+                .ThenInclude(tr => tr.RelatedTyping) // Ensure relationships are included
+                .ToDictionaryAsync(t => t.Id);
 
-            List<Typing> typingsList = new List<Typing>();
+            // Add or update Typings in the database
             foreach (Typing typing in typings)
             {
-                Typing typingToAdd;
-
                 if (existingTypings.TryGetValue(typing.Id, out Typing? existingTyping))
                 {
-                    typingToAdd = existingTyping;
+                    existingTyping.Name = typing.Name; // Update name if needed
                 }
                 else
                 {
-                    typingToAdd = new Typing { Id = typing.Id, Name = typing.Name, Relationships = new List<TypingRelationship>() };
-                    context.Typings.Add(typingToAdd);
+                    Typing newTyping = new Typing
+                    {
+                        Id = typing.Id,
+                        Name = typing.Name,
+                        Relationships = new List<TypingRelationship>()
+                    };
+                    context.Typings.Add(newTyping);
+                    existingTypings[typing.Id] = newTyping;
                 }
-
-                typingsList.Add(typingToAdd);
             }
             await context.SaveChangesAsync();
 
-            foreach (EntityEntry<Typing>? entry in context.ChangeTracker.Entries<Typing>())
-            {
-                entry.State = EntityState.Detached;
-            }
-
+            // Update Relationships for each Typing
             foreach (Typing typing in typings)
             {
-                Typing? mainTyping = typingsList.FirstOrDefault(t => t.Id == typing.Id);
-
-                if (mainTyping != null)
+                if (existingTypings.TryGetValue(typing.Id, out Typing? mainTyping))
                 {
-                    if (mainTyping.Relationships == null)
-                    {
-                        mainTyping.Relationships = new List<TypingRelationship>();
-                    }
+                    // Clear existing relationships to avoid duplicates
+                    mainTyping.Relationships.Clear();
 
                     foreach (TypingRelationship typingRelationship in typing.Relationships)
                     {
-                        if (existingTypings.TryGetValue(typingRelationship.TypingId, out Typing? existingTyping) &&
-                            existingTypings.TryGetValue(typingRelationship.RelatedTypingId, out Typing? relatedTyping))
+                        if (existingTypings.TryGetValue(typingRelationship.RelatedTypingId, out Typing? relatedTyping))
                         {
                             mainTyping.Relationships.Add(new TypingRelationship
                             {
-                                TypingId = typingRelationship.TypingId,
-                                Typing = existingTyping,
-                                RelatedTypingId = typingRelationship.RelatedTypingId,
+                                TypingId = mainTyping.Id,
+                                Typing = mainTyping,
+                                RelatedTypingId = relatedTyping.Id,
                                 RelatedTyping = relatedTyping,
                                 Relation = typingRelationship.Relation
                             });
                         }
                         else
                         {
-                            throw new Exception("Could not find typing relationships.");
+                            throw new Exception("Related typing not found.");
                         }
                     }
                     context.Typings.Update(mainTyping);
