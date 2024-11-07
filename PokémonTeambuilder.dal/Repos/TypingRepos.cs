@@ -16,8 +16,17 @@ namespace PokémonTeambuilder.dal.Repos
         }
         public async Task<List<Typing>> GetAllTypingsAsync()
         {
-            List<Typing> typings = await context.Typings.ToListAsync();
+            List<Typing> typings = await context.Typings
+                .Include(t => t.Relationships)
+                    .ThenInclude(tr => tr.RelatedTyping)
+                .ToListAsync();
             return typings;
+        }
+
+        public async Task<int> GetTypingCountAsync()
+        {
+            int count = await context.Typings.CountAsync();
+            return count;
         }
 
         public async Task SetAllTypingsAsync(List<Typing> typings)

@@ -31,6 +31,19 @@ namespace PokémonTeambuilder.core.Services
             return typings;
         }
 
+        public async Task<int> GetTypingCountAsync()
+        {
+            try
+            {
+                int result = await typingRepos.GetTypingCountAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("could not get Typing count");
+            }
+        }
+
         private void ValidateTyping(Typing typing)
         {
             //TODO: make custom Exceptions
