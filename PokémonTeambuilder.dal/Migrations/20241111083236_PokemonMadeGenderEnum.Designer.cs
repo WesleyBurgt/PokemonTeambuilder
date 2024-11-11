@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PokémonTeambuilder.dal.DbContext;
 
@@ -11,9 +12,11 @@ using PokémonTeambuilder.dal.DbContext;
 namespace PokémonTeambuilder.dal.Migrations
 {
     [DbContext(typeof(PokemonTeambuilderDbContext))]
-    partial class PokemonTeambuilderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241111083236_PokemonMadeGenderEnum")]
+    partial class PokemonMadeGenderEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

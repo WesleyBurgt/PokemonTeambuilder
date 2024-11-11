@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public string Nickname { get; set; }
         public int Level { get; set; }
-        public string Gender { get; set; }
+        public Gender Gender { get; set; }
         public BasePokemon BasePokemon { get; set; }
         public Item? Item { get; set; }
         public Nature Nature { get; set; }
