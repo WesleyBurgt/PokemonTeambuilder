@@ -93,6 +93,7 @@ namespace PokémonTeambuilder.Controllers
                 Name = move.Name,
                 Accuracy = move.Accuracy,
                 BasePower = move.BasePower,
+                PP = move.PP,
                 Description = move.Description,
                 Typing = new TypingRelationlessDto { Id = move.Typing.Id, Name = move.Typing.Name }
             };

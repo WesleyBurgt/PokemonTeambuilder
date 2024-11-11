@@ -8,5 +8,6 @@
         public TypingRelationlessDto Typing { get; set; }
         public int? BasePower { get; set; }
         public int? Accuracy { get; set; }
+        public int? PP { get; set; }
     }
 }
