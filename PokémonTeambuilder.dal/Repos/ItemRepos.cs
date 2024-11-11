@@ -20,6 +20,12 @@ namespace PokémonTeambuilder.dal.Repos
             return items;
         }
 
+        public async Task<int> GetItemCountAsync()
+        {
+            int count = await context.Items.CountAsync();
+            return count;
+        }
+
         public async Task SetAllItemsAsync(List<Item> items)
         {
             foreach (Item item in items)

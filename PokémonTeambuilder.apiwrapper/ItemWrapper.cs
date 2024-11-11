@@ -91,10 +91,13 @@ namespace PokémonTeambuilder.apiwrapper
             var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
 
-            string description = jsonObject["effect_entries"]?
+            string? description = jsonObject["effect_entries"]?
                 .FirstOrDefault(entry => entry["language"]?["name"]?.ToString() == "en")?["short_effect"]?.ToString();
 
-            string image = jsonObject["sprite"]?["default"]?.ToString();
+            string? image = jsonObject["sprites"]?["default"]?.Type == JTokenType.Null
+                ? null
+                : jsonObject["sprites"]?["default"]?.ToString();
+
 
             Item item = new Item
             {
