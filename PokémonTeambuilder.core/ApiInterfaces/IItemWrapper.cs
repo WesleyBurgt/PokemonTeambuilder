@@ -2,8 +2,8 @@
 
 namespace PokémonTeambuilder.core.ApiInterfaces
 {
-    public interface IBasePokemonWrapper
+    public interface IItemWrapper
     {
-        Task<List<BasePokemon>> GetAllBasePokemonsAsync();
+        Task<List<Item>> GetAllItemsAsync();
     }
 }

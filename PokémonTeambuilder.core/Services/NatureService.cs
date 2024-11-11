@@ -1,28 +1,55 @@
-﻿using PokémonTeambuilder.core.ApiInterfaces;
-using PokémonTeambuilder.core.Classes;
+﻿using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
 {
     public class NatureService
     {
-        private readonly INatureWrapper natureWrapper;
-        public NatureService(INatureWrapper natureWrapper)
+        private readonly INatureRepos natureRepos;
+        public NatureService(INatureRepos natureRepos)
         {
-            this.natureWrapper = natureWrapper;
+            this.natureRepos = natureRepos;
         }
 
-        public async Task<List<Nature>> GetAllNatures()
+        public async Task<List<Nature>> GetAllNaturesAsync()
         {
-            List<Nature> list = await natureWrapper.GetAllNatures();
-            foreach (Nature nature in list)
+            List<Nature> natures = [];
+            try
             {
-                //TODO: make custom Exceptions
-                if (nature.Id <= 0)
-                    throw new Exception("Nature Id cannot be" + nature.Id);
-                if (String.IsNullOrEmpty(nature.Name))
-                    throw new Exception("Nature Name cannot be null or empty");
+                natures = await natureRepos.GetAllNaturesAsync();
             }
-            return list;
+            catch (Exception ex)
+            {
+                throw new Exception("could not get Natures");
+            }
+
+            foreach (Nature nature in natures)
+            {
+                ValidateNature(nature);
+            }
+            return natures;
+        }
+
+        public async Task<int> GetNatureCountAsync()
+        {
+            try
+            {
+                int result = await natureRepos.GetNatureCountAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("could not get Nature count");
+            }
+        }
+
+        private void ValidateNature(Nature nature)
+        {
+            //TODO: make custom Exceptions
+            if (nature.Id <= 0)
+                throw new Exception("Nature Id cannot be" + nature.Id);
+            if (string.IsNullOrEmpty(nature.Name))
+                throw new Exception("Nature Name cannot be null or empty");
         }
     }
 }

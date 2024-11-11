@@ -1,47 +1,29 @@
-﻿using PokémonTeambuilder.core.DbInterfaces;
+﻿using PokémonTeambuilder.core.ApiInterfaces;
+using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Models;
 
-namespace PokémonTeambuilder.core.Services
+namespace PokémonTeambuilder.core.ApiServices
 {
     public class BasePokemonService
     {
+        private readonly IBasePokemonWrapper pokemonWrapper;
         private readonly IBasePokemonRepos pokemonRepos;
 
-        public BasePokemonService(IBasePokemonRepos pokemonRepos)
+        public BasePokemonService(IBasePokemonWrapper pokemonWrapper, IBasePokemonRepos pokemonRepos)
         {
+            this.pokemonWrapper = pokemonWrapper;
             this.pokemonRepos = pokemonRepos;
         }
 
-        public async Task<List<BasePokemon>> GetBasePokemonListAsync(int offset, int limit)
+        public async Task FetchAndSaveBasePokemonsAsync()
         {
-            List<BasePokemon> basePokemons = [];
-            try
+            List<BasePokemon> basePokemons = await pokemonWrapper.GetAllBasePokemonsAsync();
+            foreach (BasePokemon pokemon in basePokemons)
             {
-                basePokemons = await pokemonRepos.GetBasePokemonListAsync(offset, limit);
+                RemoveDuplicateAbilities(pokemon);
+                ValidateBasePokemon(pokemon);
             }
-            catch (Exception ex)
-            {
-                throw new Exception("could not get BasePokemons");
-            }
-
-            foreach (BasePokemon basePokemon in basePokemons)
-            {
-                ValidateBasePokemon(basePokemon);
-            }
-            return basePokemons;
-        }
-
-        public async Task<int> GetBasePokemonCountAsync()
-        {
-            try
-            {
-                int count = await pokemonRepos.GetBasePokemonCountAsync();
-                return count;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("could not get BasePokemon count");
-            }
+            await pokemonRepos.SetBasePokemonListAsync(basePokemons);
         }
 
         private void ValidateBasePokemon(BasePokemon pokemon)
@@ -73,6 +55,20 @@ namespace PokémonTeambuilder.core.Services
                 throw new Exception("Pokemon Abilities cannot be null");
             if (pokemon.Abilities.Count <= 0)
                 throw new Exception("Pokemon cannot have no abilities");
+        }
+
+        private bool HasDuplicateAbilities(BasePokemon pokemon)
+        {
+            return pokemon.Abilities.GroupBy(ability => ability.AbilityId).Any(group => group.Count() > 1);
+        }
+
+        private void RemoveDuplicateAbilities(BasePokemon pokemon)
+        {
+            if (HasDuplicateAbilities(pokemon))
+            {
+                pokemon.Abilities = pokemon.Abilities.GroupBy(ability => ability.AbilityId)
+                    .Select(group => group.OrderBy(item => item.Slot).FirstOrDefault()).ToList();
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.ApiInterfaces;
+using PokémonTeambuilder.core.Enums;
+using PokémonTeambuilder.core.Models;
 using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
 {
-    public class TypingWrapper
+    public class TypingWrapper : ITypingWrapper
     {
         static HttpClient client = new HttpClient();
 
@@ -19,9 +21,10 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<Typing>> GetAllTypings()
+        public async Task<List<Typing>> GetAllTypingsAsync()
         {
-            HttpResponseMessage response = await client.GetAsync($"type/");
+            int typingCount = await GetTypingCountAsync();
+            HttpResponseMessage response = await client.GetAsync($"type?offset=0&limit={typingCount}");
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Could not get response from api"); //TODO: custom exception
@@ -41,7 +44,7 @@ namespace PokémonTeambuilder.apiwrapper
             List<Task<Typing>> tasks = new List<Task<Typing>>();
             foreach (int id in ids)
             {
-                tasks.Add(GetTypingById(id));
+                tasks.Add(GetTypingAsync(id));
             }
             Typing[] typingsArray = await Task.WhenAll(tasks);
             typings = typingsArray.ToList();
@@ -52,8 +55,22 @@ namespace PokémonTeambuilder.apiwrapper
             }
             else
             {
-                throw new Exception("could not get pokemon list"); //TODO: custom exception
+                throw new Exception("could not get type list"); //TODO: custom exception
             }
+        }
+
+        private async Task<int> GetTypingCountAsync()
+        {
+            HttpResponseMessage response = await client.GetAsync($"type?offset=0&limit=1");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Could not get response from api"); //TODO: custom exception
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            JObject jsonObject = JObject.Parse(json);
+            int typingCount = (int)jsonObject["count"];
+            return typingCount;
         }
 
         private int GetIdOutOfUrl(string url)
@@ -62,7 +79,7 @@ namespace PokémonTeambuilder.apiwrapper
             return int.Parse(urlParts[^2]);
         }
 
-        public async Task<Typing> GetTypingById(int id)
+        private async Task<Typing> GetTypingAsync(int id)
         {
             HttpResponseMessage response = await client.GetAsync($"type/{id}");
             if (!response.IsSuccessStatusCode)
@@ -74,33 +91,62 @@ namespace PokémonTeambuilder.apiwrapper
             JObject jsonObject = JObject.Parse(json);
             JToken damageRelations = jsonObject["damage_relations"];
 
-            JArray weaknesses = (JArray)damageRelations["double_damage_from"];
-            JArray resistances = (JArray)damageRelations["half_damage_from"];
-            JArray immunities = (JArray)damageRelations["no_damage_from"];
-
-            List<TypingRelationless> weaknessList = GetTypingWithoutRelationsOutOfJArray(weaknesses);
-            List<TypingRelationless> resistanceList = GetTypingWithoutRelationsOutOfJArray(resistances);
-            List<TypingRelationless> immunityList = GetTypingWithoutRelationsOutOfJArray(immunities);
-
             Typing typing = new Typing
             {
                 Id = (int)jsonObject["id"],
                 Name = jsonObject["name"].ToString(),
-                Weaknesses = weaknessList,
-                Resistances = resistanceList,
-                Immunities = immunityList
             };
+            typing.Relationships = GetTypingRelationships(typing, damageRelations);
+
             return typing;
         }
 
-        private List<TypingRelationless> GetTypingWithoutRelationsOutOfJArray(JArray array)
+        private List<TypingRelationship> GetTypingRelationships(Typing typing, JToken typingRelations)
         {
-            List<TypingRelationless> typings = array.Select(typing =>
+            JArray weaknesses = (JArray)typingRelations["double_damage_from"];
+            JArray resistances = (JArray)typingRelations["half_damage_from"];
+            JArray immunities = (JArray)typingRelations["no_damage_from"];
+
+            List<Typing> weaknessList = GetTypingWithoutRelationsOutOfJArray(weaknesses);
+            List<Typing> resistanceList = GetTypingWithoutRelationsOutOfJArray(resistances);
+            List<Typing> immunityList = GetTypingWithoutRelationsOutOfJArray(immunities);
+
+            List<TypingRelationship> weaknessRelationships = TypingListToTypingRelationshipList(typing, weaknessList, TypingRelation.weak);
+            List<TypingRelationship> resistanceRelationships = TypingListToTypingRelationshipList(typing, resistanceList, TypingRelation.resist);
+            List<TypingRelationship> immunityRelationships = TypingListToTypingRelationshipList(typing, immunityList, TypingRelation.immune);
+
+            List<TypingRelationship> result = [];
+            result.AddRange(weaknessRelationships);
+            result.AddRange(resistanceRelationships);
+            result.AddRange(immunityRelationships);
+            return result;
+        }
+
+        private List<TypingRelationship> TypingListToTypingRelationshipList(Typing typing, List<Typing> typingList, TypingRelation relation)
+        {
+            List<TypingRelationship> result = [];
+            foreach (Typing relatedTyping in typingList)
+            {
+                result.Add(new TypingRelationship
+                {
+                    Typing = typing,
+                    TypingId = typing.Id,
+                    RelatedTyping = relatedTyping,
+                    RelatedTypingId = relatedTyping.Id,
+                    Relation = relation
+                });
+            }
+            return result;
+        }
+
+        private List<Typing> GetTypingWithoutRelationsOutOfJArray(JArray array)
+        {
+            List<Typing> typings = array.Select(typing =>
             {
                 string name = typing["name"].ToString();
                 string url = typing["url"].ToString();
                 int id = GetIdOutOfUrl(url);
-                return new TypingRelationless { Id = id, Name = name };
+                return new Typing { Id = id, Name = name };
 
             }).ToList();
             return typings;

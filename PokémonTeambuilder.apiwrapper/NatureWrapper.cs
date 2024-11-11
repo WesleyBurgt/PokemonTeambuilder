@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using PokémonTeambuilder.core.ApiInterfaces;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.Enums;
+using PokémonTeambuilder.core.Models;
 using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
@@ -9,7 +10,7 @@ namespace PokémonTeambuilder.apiwrapper
     {
         static HttpClient client = new HttpClient();
 
-        public NatureWrapper() 
+        public NatureWrapper()
         {
             if (client.BaseAddress == null)
             {
@@ -20,9 +21,9 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<Nature>> GetAllNatures()
+        public async Task<List<Nature>> GetAllNaturesAsync()
         {
-            int NatureCount = await GetNatureCount();
+            int NatureCount = await GetNatureCountAsync();
 
             HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit={NatureCount}");
             if (!response.IsSuccessStatusCode)
@@ -59,7 +60,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        private async Task<int> GetNatureCount()
+        private async Task<int> GetNatureCountAsync()
         {
             HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)

@@ -2,8 +2,8 @@
 
 namespace PokémonTeambuilder.core.ApiInterfaces
 {
-    public interface IBasePokemonWrapper
+    public interface ITypingWrapper
     {
-        Task<List<BasePokemon>> GetAllBasePokemonsAsync();
+        Task<List<Typing>> GetAllTypingsAsync();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PokémonTeambuilder.core.ApiInterfaces;
-using PokémonTeambuilder.core.Classes;
+using PokémonTeambuilder.core.Models;
 using System.Net.Http.Headers;
 
 namespace PokémonTeambuilder.apiwrapper
@@ -9,11 +9,10 @@ namespace PokémonTeambuilder.apiwrapper
     {
         static HttpClient client = new HttpClient();
 
-        private bool multiplePokemonFetches = false;
         private TypingWrapper typingWrapper = new TypingWrapper();
         private List<Typing> typings = [];
 
-        public BasePokemonWrapper() 
+        public BasePokemonWrapper()
         {
             if (client.BaseAddress == null)
             {
@@ -24,15 +23,25 @@ namespace PokémonTeambuilder.apiwrapper
             }
         }
 
-        public async Task<List<BasePokemon>> GetPokemonList(int offset, int limit)
+        public async Task<int> GetPokemonCountAsync()
         {
-            if (offset < 0)
+            HttpResponseMessage response = await client.GetAsync($"pokemon?offset=0&limit=1");
+            if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("offset must be 0 or more"); //TODO: custom exception
+                throw new Exception("Could not get response from api"); //TODO: custom exception
             }
-            multiplePokemonFetches = limit > 1;
 
-            HttpResponseMessage response = await client.GetAsync($"pokemon?offset={offset}&limit={limit}");
+            var json = await response.Content.ReadAsStringAsync();
+            JObject jsonObject = JObject.Parse(json);
+            int pokemonCount = (int)jsonObject["count"];
+            return pokemonCount;
+        }
+
+        public async Task<List<BasePokemon>> GetAllBasePokemonsAsync()
+        {
+            int pokemonCount = await GetPokemonCountAsync();
+
+            HttpResponseMessage response = await client.GetAsync($"pokemon?offset=0&limit={pokemonCount}");
             if (!response.IsSuccessStatusCode)
             {
                 throw new Exception("Could not get response from api"); //TODO: custom exception
@@ -47,7 +56,7 @@ namespace PokémonTeambuilder.apiwrapper
 
             }).ToList();
 
-            typings = await typingWrapper.GetAllTypings();
+            typings = await typingWrapper.GetAllTypingsAsync();
             List<BasePokemon> pokemons = [];
             List<Task<BasePokemon>> tasks = new List<Task<BasePokemon>>();
             foreach (int id in ids)
@@ -96,25 +105,9 @@ namespace PokémonTeambuilder.apiwrapper
             {
                 JToken typeToken = type["type"];
                 string typeName = typeToken["name"].ToString();
-                if (multiplePokemonFetches)
+                Typing? typing = typings.FirstOrDefault(t => t.Name == typeName);
+                if (typing != null)
                 {
-                    Typing typing = typings.FirstOrDefault(t => t.Name == typeName);
-                    if (typing != null)
-                    {
-                        types.Add(typing);
-                    }
-                    else
-                    {
-                        int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
-                        typing = await typingWrapper.GetTypingById(typeId);
-                        types.Add(typing);
-                        typings.Add(typing);
-                    }
-                }
-                else
-                {
-                    int typeId = GetIdOutOfUrl(typeToken["url"].ToString());
-                    Typing typing = await typingWrapper.GetTypingById(typeId);
                     types.Add(typing);
                 }
             }
@@ -147,13 +140,15 @@ namespace PokémonTeambuilder.apiwrapper
             }
             pokemon.Moves = moves;
 
-            List<Ability> abilities = new List<Ability>();
+            List<BasePokemonAbility> abilities = new List<BasePokemonAbility>();
             foreach (var ability in jsonObject["abilities"])
             {
                 JToken abilityToken = ability["ability"];
                 string abilityName = abilityToken["name"].ToString();
                 int abilityId = GetIdOutOfUrl(abilityToken["url"].ToString());
-                abilities.Add(new Ability { Name = abilityName, Id = abilityId });
+                bool isHidden = Boolean.Parse(ability["is_hidden"].ToString());
+                int slot = int.Parse(ability["slot"].ToString());
+                abilities.Add(new BasePokemonAbility { Ability = new Ability { Name = abilityName, Id = abilityId }, AbilityId = abilityId, BasePokemon = pokemon, BasePokemonId = pokemon.Id, IsHidden = isHidden, Slot = slot });
             }
             pokemon.Abilities = abilities;
 
