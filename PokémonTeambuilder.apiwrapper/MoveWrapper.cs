@@ -90,6 +90,8 @@ namespace PokémonTeambuilder.apiwrapper
             var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
 
+            string category = jsonObject["damage_class"]?["name"]?.ToString();
+
             int? accuracy = null;
             JToken accuracyToken = jsonObject["accuracy"];
             if (accuracyToken != null && accuracyToken.Type != JTokenType.Null)
@@ -129,6 +131,7 @@ namespace PokémonTeambuilder.apiwrapper
             {
                 Id = id,
                 Name = jsonObject["name"].ToString(),
+                Category = category,
                 Accuracy = accuracy,
                 BasePower = basePower,
                 PP = pp,

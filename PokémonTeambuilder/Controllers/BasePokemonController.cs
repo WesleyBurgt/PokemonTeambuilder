@@ -91,6 +91,7 @@ namespace PokémonTeambuilder.Controllers
             {
                 Id = move.Id,
                 Name = move.Name,
+                Category = move.Category,
                 Accuracy = move.Accuracy,
                 BasePower = move.BasePower,
                 PP = move.PP,
