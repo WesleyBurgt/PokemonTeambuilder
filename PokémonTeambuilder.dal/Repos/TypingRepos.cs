@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
 
@@ -76,7 +77,7 @@ namespace PokémonTeambuilder.dal.Repos
                         }
                         else
                         {
-                            throw new Exception("Related typing not found.");
+                            throw new ReposResponseException("Related typing not found.");
                         }
                     }
                     context.Typings.Update(mainTyping);

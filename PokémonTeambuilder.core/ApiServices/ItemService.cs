@@ -1,5 +1,6 @@
 ﻿using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.ApiServices
@@ -27,11 +28,10 @@ namespace PokémonTeambuilder.core.ApiServices
 
         private void ValidateItem(Item item)
         {
-            //TODO: make custom Exceptions
             if (item.Id <= 0)
-                throw new Exception("Item Id cannot be" + item.Id);
+                throw new InvalidIdException("Item Id cannot be" + item.Id, item.Id, item.GetType());
             if (string.IsNullOrEmpty(item.Name))
-                throw new Exception("Item Name cannot be null or empty");
+                throw new InvalidNameException("Item Name cannot be null or empty", item.Name, item.GetType());
         }
     }
 }

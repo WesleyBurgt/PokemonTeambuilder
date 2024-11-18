@@ -1,4 +1,5 @@
 ﻿using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
@@ -18,9 +19,9 @@ namespace PokémonTeambuilder.core.Services
             {
                 typings = await typingRepos.GetAllTypingsAsync();
             }
-            catch (Exception ex)
+            catch (ReposResponseException ex)
             {
-                throw new Exception("could not get Typings");
+                throw new ReposResponseException("Could not get Typings", ex);
             }
 
             foreach (Typing typing in typings)
@@ -37,19 +38,18 @@ namespace PokémonTeambuilder.core.Services
                 int result = await typingRepos.GetTypingCountAsync();
                 return result;
             }
-            catch (Exception ex)
+            catch (ReposResponseException ex)
             {
-                throw new Exception("could not get Typing count");
+                throw new ReposResponseException("Could not get Typing count", ex);
             }
         }
 
         private void ValidateTyping(Typing typing)
         {
-            //TODO: make custom Exceptions
             if (typing.Id <= 0)
-                throw new Exception("Typing Id cannot be" + typing.Id);
+                throw new InvalidIdException("Typing Id cannot be" + typing.Id, typing.Id, typing.GetType());
             if (string.IsNullOrEmpty(typing.Name))
-                throw new Exception("Typing Name cannot be null or empty");
+                throw new InvalidNameException("Typing Name cannot be null or empty", typing.Name, typing.GetType());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
@@ -26,7 +27,7 @@ namespace PokémonTeambuilder.core.Services
         {
             if (await userRepos.UsernameTakenAsync(username))
             {
-                throw new Exception("Username is already taken.");
+                throw new InvalidNameException("Username is already taken.", username);
             }
 
             string hashedPassword = HashPassword(password);

@@ -1,5 +1,6 @@
 ﻿using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.ApiServices
@@ -28,33 +29,32 @@ namespace PokémonTeambuilder.core.ApiServices
 
         private void ValidateBasePokemon(BasePokemon pokemon)
         {
-            //TODO: make custom Exceptions
             if (pokemon.Id <= 0)
-                throw new Exception("Pokemon Id cannot be" + pokemon.Id);
+                throw new InvalidIdException("Pokemon Id cannot be" + pokemon.Id, pokemon.Id, pokemon.GetType());
             if (string.IsNullOrEmpty(pokemon.Name))
-                throw new Exception("Pokemon Name cannot be null or empty");
+                throw new InvalidNameException("Pokemon Name cannot be null or empty", pokemon.Name, pokemon.GetType());
             if (pokemon.Typings == null)
-                throw new Exception("Pokemon Typing cannot be null");
+                throw new InvalidVariableException("Pokemon Typing cannot be null", pokemon.Typings, pokemon.GetType());
             if (pokemon.Typings.Count <= 0)
-                throw new Exception("Pokemon cannot have no typing");
+                throw new InvalidAmountException("Pokemon cannot have no typing", pokemon.Typings.Count, new Range(1, int.MaxValue));
             if (pokemon.BaseStats == null)
-                throw new Exception("Pokemon Stats cannot be null");
+                throw new InvalidVariableException("Pokemon Stats cannot be null", pokemon.BaseStats, typeof(BasePokemon));
             if (pokemon.BaseStats.Hp <= 0)
-                throw new Exception("Pokemon Hp cannot be" + pokemon.BaseStats.Hp);
+                throw new InvalidVariableException("Pokemon Hp cannot be" + pokemon.BaseStats.Hp, pokemon.BaseStats.Hp, pokemon.BaseStats.GetType());
             if (pokemon.BaseStats.Attack <= 0)
-                throw new Exception("Pokemon Attack cannot be" + pokemon.BaseStats.Attack);
+                throw new InvalidVariableException("Pokemon Attack cannot be" + pokemon.BaseStats.Attack, pokemon.BaseStats.Attack, pokemon.BaseStats.GetType());
             if (pokemon.BaseStats.Defense <= 0)
-                throw new Exception("Pokemon Defense cannot be" + pokemon.BaseStats.Defense);
+                throw new InvalidVariableException("Pokemon Defense cannot be" + pokemon.BaseStats.Defense, pokemon.BaseStats.Defense, pokemon.BaseStats.GetType());
             if (pokemon.BaseStats.SpecialAttack <= 0)
-                throw new Exception("Pokemon SpecialAttack cannot be" + pokemon.BaseStats.SpecialAttack);
+                throw new InvalidVariableException("Pokemon SpecialAttack cannot be" + pokemon.BaseStats.SpecialAttack, pokemon.BaseStats.SpecialAttack, pokemon.BaseStats.GetType());
             if (pokemon.BaseStats.SpecialDefense <= 0)
-                throw new Exception("Pokemon SpecialDefense cannot be" + pokemon.BaseStats.SpecialDefense);
+                throw new InvalidVariableException("Pokemon SpecialDefense cannot be" + pokemon.BaseStats.SpecialDefense, pokemon.BaseStats.SpecialDefense, pokemon.BaseStats.GetType());
             if (pokemon.BaseStats.Speed <= 0)
-                throw new Exception("Pokemon Speed cannot be" + pokemon.BaseStats.Speed);
+                throw new InvalidVariableException("Pokemon Speed cannot be" + pokemon.BaseStats.Speed, pokemon.BaseStats.Speed, pokemon.BaseStats.GetType());
             if (pokemon.Abilities == null)
-                throw new Exception("Pokemon Abilities cannot be null");
+                throw new InvalidVariableException("Pokemon Abilities cannot be null", pokemon.Abilities, pokemon.GetType());
             if (pokemon.Abilities.Count <= 0)
-                throw new Exception("Pokemon cannot have no abilities");
+                throw new InvalidAmountException("Pokemon cannot have no abilities", pokemon.Abilities.Count, new Range(1, int.MaxValue));
         }
 
         private bool HasDuplicateAbilities(BasePokemon pokemon)

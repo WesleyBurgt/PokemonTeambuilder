@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
 
@@ -126,7 +127,7 @@ namespace PokémonTeambuilder.dal.Repos
                 }
                 else
                 {
-                    throw new Exception("Typing is not in database");
+                    throw new ReposResponseException("Typing is not in database");
                 }
             }
             return typingList;
@@ -154,7 +155,7 @@ namespace PokémonTeambuilder.dal.Repos
                     }
                     else
                     {
-                        throw new Exception("Ability is not in database");
+                        throw new ReposResponseException("Ability is not in database");
                     }
                 }
             }
@@ -176,7 +177,7 @@ namespace PokémonTeambuilder.dal.Repos
                 }
                 else
                 {
-                    throw new Exception("Move is not in database");
+                    throw new ReposResponseException("Move is not in database");
                 }
             }
             return moveList;

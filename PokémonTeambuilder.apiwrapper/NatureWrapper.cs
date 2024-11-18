@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.Enums;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 using System.Net.Http.Headers;
 
@@ -28,7 +29,7 @@ namespace PokémonTeambuilder.apiwrapper
             HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit={NatureCount}");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Could not get response from api"); //TODO: custom exception
+                throw new ApiResponseException("Could not get response from api");
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -56,7 +57,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
             else
             {
-                throw new Exception("could not get nature list"); //TODO: custom exception
+                throw new ApiResponseException("could not get nature list");
             }
         }
 
@@ -65,7 +66,7 @@ namespace PokémonTeambuilder.apiwrapper
             HttpResponseMessage response = await client.GetAsync($"nature?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Could not get response from api"); //TODO: custom exception
+                throw new ApiResponseException("Could not get response from api");
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -92,7 +93,7 @@ namespace PokémonTeambuilder.apiwrapper
                 case "speed": return StatsEnum.Speed;
                 case "": return null;
             };
-            throw new Exception("could not convert from string to statsEnum"); //TODO: custom exception
+            throw new ApiResponseException("could not convert from string to statsEnum");
         }
 
         private async Task<Nature> GetNature(int id)
@@ -100,7 +101,7 @@ namespace PokémonTeambuilder.apiwrapper
             HttpResponseMessage response = await client.GetAsync($"nature/{id}");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Could not get response from api"); //TODO: custom exception
+                throw new ApiResponseException("Could not get response from api");
             }
 
             var json = await response.Content.ReadAsStringAsync();

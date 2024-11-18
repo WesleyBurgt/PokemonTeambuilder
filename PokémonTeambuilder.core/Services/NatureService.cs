@@ -1,4 +1,5 @@
 ﻿using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
@@ -18,9 +19,9 @@ namespace PokémonTeambuilder.core.Services
             {
                 natures = await natureRepos.GetAllNaturesAsync();
             }
-            catch (Exception ex)
+            catch (ReposResponseException ex)
             {
-                throw new Exception("could not get Natures");
+                throw new ReposResponseException("Could not get Natures", ex);
             }
 
             foreach (Nature nature in natures)
@@ -37,19 +38,18 @@ namespace PokémonTeambuilder.core.Services
                 int result = await natureRepos.GetNatureCountAsync();
                 return result;
             }
-            catch (Exception ex)
+            catch (ReposResponseException ex)
             {
-                throw new Exception("could not get Nature count");
+                throw new ReposResponseException("Could not get Nature count", ex);
             }
         }
 
         private void ValidateNature(Nature nature)
         {
-            //TODO: make custom Exceptions
             if (nature.Id <= 0)
-                throw new Exception("Nature Id cannot be" + nature.Id);
+                throw new InvalidIdException("Nature Id cannot be" + nature.Id, nature.Id, nature.GetType());
             if (string.IsNullOrEmpty(nature.Name))
-                throw new Exception("Nature Name cannot be null or empty");
+                throw new InvalidNameException("Nature Name cannot be null or empty", nature.Name, nature.GetType());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.ApiServices
@@ -27,11 +28,10 @@ namespace PokémonTeambuilder.core.ApiServices
 
         private void ValidateNature(Nature nature)
         {
-            //TODO: make custom Exceptions
             if (nature.Id <= 0)
-                throw new Exception("Nature Id cannot be" + nature.Id);
+                throw new InvalidIdException("Nature Id cannot be" + nature.Id, nature.Id, nature.GetType());
             if (string.IsNullOrEmpty(nature.Name))
-                throw new Exception("Nature Name cannot be null or empty");
+                throw new InvalidNameException("Nature Name cannot be null or empty", nature.Name, nature.GetType());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PokémonTeambuilder.core.ApiInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 using System.Net.Http.Headers;
 
@@ -28,7 +29,7 @@ namespace PokémonTeambuilder.apiwrapper
             HttpResponseMessage response = await client.GetAsync($"pokemon?offset=0&limit=1");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Could not get response from api"); //TODO: custom exception
+                throw new ApiResponseException("Could not get response from api");
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -44,7 +45,7 @@ namespace PokémonTeambuilder.apiwrapper
             HttpResponseMessage response = await client.GetAsync($"pokemon?offset=0&limit={pokemonCount}");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Could not get response from api"); //TODO: custom exception
+                throw new ApiResponseException("Could not get response from api");
             }
             var json = await response.Content.ReadAsStringAsync();
             JObject jsonObject = JObject.Parse(json);
@@ -72,7 +73,7 @@ namespace PokémonTeambuilder.apiwrapper
             }
             else
             {
-                throw new Exception("could not get pokemon list"); //TODO: custom exception
+                throw new ApiResponseException("could not get pokemon list");
             }
         }
 
@@ -87,7 +88,7 @@ namespace PokémonTeambuilder.apiwrapper
             HttpResponseMessage response = await client.GetAsync($"pokemon/{id}/");
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Could not get response from api"); //TODO: custom exception
+                throw new ApiResponseException("Could not get response from api");
             }
 
             var json = await response.Content.ReadAsStringAsync();

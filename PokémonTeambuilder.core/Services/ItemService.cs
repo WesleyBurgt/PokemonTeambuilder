@@ -1,4 +1,5 @@
 ﻿using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 
 namespace PokémonTeambuilder.core.Services
@@ -18,9 +19,9 @@ namespace PokémonTeambuilder.core.Services
             {
                 items = await itemRepos.GetAllItemsAsync();
             }
-            catch (Exception ex)
+            catch (ReposResponseException ex)
             {
-                throw new Exception("could not get Items");
+                throw new ReposResponseException("Could not get Items", ex);
             }
 
             foreach (Item item in items)
@@ -37,19 +38,18 @@ namespace PokémonTeambuilder.core.Services
                 int result = await itemRepos.GetItemCountAsync();
                 return result;
             }
-            catch (Exception ex)
+            catch (ReposResponseException ex)
             {
-                throw new Exception("could not get Item count");
+                throw new ReposResponseException("Could not get Item count", ex);
             }
         }
 
         private void ValidateItem(Item item)
         {
-            //TODO: make custom Exceptions
             if (item.Id <= 0)
-                throw new Exception("Item Id cannot be" + item.Id);
+                throw new InvalidIdException("Item Id cannot be" + item.Id, item.Id, item.GetType());
             if (string.IsNullOrEmpty(item.Name))
-                throw new Exception("Item Name cannot be null or empty");
+                throw new InvalidNameException("Item Name cannot be null or empty", item.Name, item.GetType());
         }
     }
 }

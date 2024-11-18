@@ -1,5 +1,6 @@
 ﻿using PokémonTeambuilder.core.ApiInterfaces;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 namespace PokémonTeambuilder.core.ApiServices
 {
@@ -26,11 +27,10 @@ namespace PokémonTeambuilder.core.ApiServices
 
         private void ValidateTyping(Typing typing)
         {
-            //TODO: make custom Exceptions
             if (typing.Id <= 0)
-                throw new Exception("Typing Id cannot be" + typing.Id);
+                throw new InvalidIdException("Typing Id cannot be" + typing.Id, typing.Id, typing.GetType());
             if (string.IsNullOrEmpty(typing.Name))
-                throw new Exception("Typing Name cannot be null or empty");
+                throw new InvalidNameException("Typing Name cannot be null or empty", typing.Name, typing.GetType());
         }
     }
 }

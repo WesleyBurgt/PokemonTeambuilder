@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PokémonTeambuilder.core.DbInterfaces;
+using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
 
@@ -33,7 +34,7 @@ namespace PokémonTeambuilder.dal.Repos
                 }
                 else
                 {
-                    throw new Exception("Typing is not in database");
+                    throw new ReposResponseException("Typing is not in database");
                 }
 
                 if (await context.Moves.AnyAsync(m => m.Id == move.Id))
