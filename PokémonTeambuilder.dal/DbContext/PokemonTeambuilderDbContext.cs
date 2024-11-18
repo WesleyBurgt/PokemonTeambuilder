@@ -12,6 +12,7 @@ namespace PokémonTeambuilder.dal.DbContext
         public DbSet<BasePokemon> BasePokemons { get; set; }
         public DbSet<Pokemon> Pokemons { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Ability> Abilties { get; set; }
         public DbSet<BasePokemonAbility> BasePokemonAbilities { get; set; }
         public DbSet<Typing> Typings { get; set; }
