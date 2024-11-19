@@ -14,6 +14,7 @@ namespace PokémonTeambuilder.dal.DbContext
         public DbSet<Team> Teams { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Ability> Abilties { get; set; }
+        public DbSet<BasePokemonTyping> BasePokemonTypings { get; set; }
         public DbSet<BasePokemonAbility> BasePokemonAbilities { get; set; }
         public DbSet<Typing> Typings { get; set; }
         public DbSet<TypingRelationship> TypingRelationships { get; set; }
@@ -80,6 +81,23 @@ namespace PokémonTeambuilder.dal.DbContext
                 .WithMany()
                 .HasForeignKey(tr => tr.RelatedTypingId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //BasePokemonTyping many-to-many
+            modelBuilder.Entity<BasePokemonTyping>()
+                .HasKey(bpt => new { bpt.BasePokemonId, bpt.TypingId });
+
+            modelBuilder.Entity<BasePokemonTyping>()
+                .HasOne(bpt => bpt.BasePokemon)
+                .WithMany(bp => bp.Typings)
+                .HasForeignKey(bpt => bpt.BasePokemonId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BasePokemonTyping>()
+                .HasOne(bpt => bpt.Typing)
+                .WithMany()
+                .HasForeignKey(bpt => bpt.TypingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             //BasePokemonAbility many-to-many
             modelBuilder.Entity<BasePokemonAbility>()

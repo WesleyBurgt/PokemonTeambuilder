@@ -6,6 +6,5 @@
         public string Name { get; set; }
 
         public ICollection<TypingRelationship> Relationships { get; set; }
-        public ICollection<BasePokemon> BasePokemons { get; set; }
     }
 }

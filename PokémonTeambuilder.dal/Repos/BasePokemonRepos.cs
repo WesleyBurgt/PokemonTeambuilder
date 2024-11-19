@@ -19,8 +19,9 @@ namespace PokémonTeambuilder.dal.Repos
         {
             List<BasePokemon> basePokemons = await context.BasePokemons
                 .Include(bp => bp.Typings)
-                    .ThenInclude(t => t.Relationships)
-                        .ThenInclude(tr => tr.RelatedTyping)
+                    .ThenInclude(bpt => bpt.Typing)
+                        .ThenInclude(t => t.Relationships)
+                            .ThenInclude(tr => tr.RelatedTyping)
                 .Include(bp => bp.Abilities)
                     .ThenInclude(a => a.Ability)
                 .Include(bp => bp.Moves)
@@ -65,11 +66,11 @@ namespace PokémonTeambuilder.dal.Repos
         {
             if (!BasePokemonIsInDatabase(basePokemon))
             {
-                List<Typing> typings = await GetTypingsFromDatabase(basePokemon);
+                List<BasePokemonTyping> basePokemonTypings = await GetBasePokemonTypingsFromDatabase(basePokemon);
                 List<BasePokemonAbility> basePokemonAbilities = await GetBasePokemonAbilitiesFromDatabase(basePokemon);
                 List<Move> moves = await GetMovesFromDatabase(basePokemon);
 
-                basePokemon.Typings = typings;
+                basePokemon.Typings = basePokemonTypings;
                 basePokemon.Abilities = basePokemonAbilities;
                 basePokemon.Moves = moves;
 
@@ -88,11 +89,11 @@ namespace PokémonTeambuilder.dal.Repos
 
             if (existingBasePokemon != null)
             {
-                List<Typing> typings = await GetTypingsFromDatabase(basePokemon);
+                List<BasePokemonTyping> basePokemonTypings = await GetBasePokemonTypingsFromDatabase(basePokemon);
                 List<BasePokemonAbility> basePokemonAbilities = await GetBasePokemonAbilitiesFromDatabase(basePokemon);
                 List<Move> moves = await GetMovesFromDatabase(basePokemon);
 
-                existingBasePokemon.Typings = typings;
+                existingBasePokemon.Typings = basePokemonTypings;
                 existingBasePokemon.Abilities = basePokemonAbilities;
                 UpdateMovesExistingBasePokemon(existingBasePokemon, moves);
 
@@ -112,25 +113,33 @@ namespace PokémonTeambuilder.dal.Repos
             }
         }
 
-        private async Task<List<Typing>> GetTypingsFromDatabase(BasePokemon basePokemon)
+        private async Task<List<BasePokemonTyping>> GetBasePokemonTypingsFromDatabase(BasePokemon basePokemon)
         {
-            List<Typing> typingList = basePokemon.Typings.ToList();
-            for (int i = 0; i < typingList.Count; i++)
+            List<BasePokemonTyping> basePokemonTypingList = basePokemon.Typings.ToList();
+            for (int i = 0; i < basePokemonTypingList.Count; i++)
             {
-                Typing typing = typingList[i];
+                BasePokemonTyping basePokemonTyping = basePokemonTypingList[i];
 
-                Typing? existingTyping = await context.Typings.FirstOrDefaultAsync(t => t.Id == typing.Id);
+                BasePokemonTyping? existingBasePokemonTyping = await context.BasePokemonTypings.FirstOrDefaultAsync(bpt => bpt.TypingId == basePokemonTyping.TypingId);
 
-                if (existingTyping != null)
+                if (existingBasePokemonTyping != null)
                 {
-                    typingList[i] = existingTyping;
+                    basePokemonTypingList[i] = existingBasePokemonTyping;
                 }
                 else
                 {
-                    throw new ReposResponseException("Typing is not in database");
+                    Typing? existingTyping = context.Typings.FirstOrDefault(t => t.Id == basePokemonTyping.TypingId);
+                    if (existingTyping != null)
+                    {
+                        basePokemonTyping.Typing = existingTyping;
+                    }
+                    else
+                    {
+                        throw new ReposResponseException("Typing is not in database");
+                    }
                 }
             }
-            return typingList;
+            return basePokemonTypingList;
         }
 
         private async Task<List<BasePokemonAbility>> GetBasePokemonAbilitiesFromDatabase(BasePokemon basePokemon)

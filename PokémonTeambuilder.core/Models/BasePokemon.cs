@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ICollection<Typing> Typings { get; set; }
+        public ICollection<BasePokemonTyping> Typings { get; set; }
         public ICollection<BasePokemonAbility> Abilities { get; set; }
         public Stats BaseStats { get; set; }
         public ICollection<Move> Moves { get; set; }

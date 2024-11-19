@@ -101,18 +101,19 @@ namespace PokémonTeambuilder.apiwrapper
                 Sprite = jsonObject["sprites"]["front_default"].ToString()
             };
 
-            List<Typing> types = new List<Typing>();
+            List<BasePokemonTyping> basePokemonTypings = new List<BasePokemonTyping>();
             foreach (var type in jsonObject["types"])
             {
                 JToken typeToken = type["type"];
                 string typeName = typeToken["name"].ToString();
+                int slot = int.Parse(type["slot"].ToString());
                 Typing? typing = typings.FirstOrDefault(t => t.Name == typeName);
                 if (typing != null)
                 {
-                    types.Add(typing);
+                    basePokemonTypings.Add(new BasePokemonTyping { BasePokemon = pokemon, BasePokemonId = id, Slot = slot, Typing = typing, TypingId = typing.Id });
                 }
             }
-            pokemon.Typings = types;
+            pokemon.Typings = basePokemonTypings;
 
             Stats stats = new Stats();
             foreach (var stat in jsonObject["stats"])

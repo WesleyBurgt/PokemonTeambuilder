@@ -56,7 +56,7 @@ namespace PokémonTeambuilder.Controllers
                 BaseStats = MapStatsToDto(basePokemon.BaseStats),
                 Moves = basePokemon.Moves.Select(move => MapMoveToDto(move)).ToList(),
                 Sprite = basePokemon.Sprite,
-                Typings = basePokemon.Typings.Select(typing => MapTypingToDto(typing)).ToList()
+                Typings = basePokemon.Typings.Select(typing => MapBasePokemonTypingToDto(typing)).ToList()
             };
         }
 
@@ -100,24 +100,30 @@ namespace PokémonTeambuilder.Controllers
             };
         }
 
-        private TypingDto MapTypingToDto(Typing typing)
+
+        private BasePokemonTypingDto MapBasePokemonTypingToDto(BasePokemonTyping basePokemonTyping)
         {
-            return new TypingDto
+            return new BasePokemonTypingDto
             {
-                Id = typing.Id,
-                Name = typing.Name,
-                Weaknesses = typing.Relationships
+                Slot = basePokemonTyping.Slot,
+                Typing = new TypingDto
+                {
+                    Id = basePokemonTyping.Typing.Id,
+                    Name = basePokemonTyping.Typing.Name,
+
+                    Weaknesses = basePokemonTyping.Typing.Relationships
                     .Where(r => r.Relation == TypingRelation.weak)
                     .Select(r => new TypingRelationlessDto { Id = r.RelatedTyping.Id, Name = r.RelatedTyping.Name })
                     .ToList(),
-                Resistances = typing.Relationships
+                    Resistances = basePokemonTyping.Typing.Relationships
                     .Where(r => r.Relation == TypingRelation.resist)
                     .Select(r => new TypingRelationlessDto { Id = r.RelatedTyping.Id, Name = r.RelatedTyping.Name })
                     .ToList(),
-                Immunities = typing.Relationships
+                    Immunities = basePokemonTyping.Typing.Relationships
                     .Where(r => r.Relation == TypingRelation.immune)
                     .Select(r => new TypingRelationlessDto { Id = r.RelatedTyping.Id, Name = r.RelatedTyping.Name })
                     .ToList()
+                }
             };
         }
     }
