@@ -6,6 +6,7 @@ namespace PokémonTeambuilder.core.DbInterfaces
     {
         Task<List<Nature>> GetAllNaturesAsync();
         Task<int> GetNatureCountAsync();
+        Task<Nature> GetNatureByIdAsync(int id);
         Task SetAllNaturesAsync(List<Nature> natures);
     }
 }

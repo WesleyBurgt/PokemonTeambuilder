@@ -15,10 +15,12 @@ namespace PokémonTeambuilder.Controllers
     public class TeamController : ControllerBase
     {
         private readonly TeamService teamService;
+        private readonly PokemonService pokemonService;
 
         public TeamController(PokemonTeambuilderDbContext context)
         {
             teamService = new TeamService(new TeamRepos(context));
+            pokemonService = new PokemonService(new PokemonRepos(context), new BasePokemonRepos(context), new NatureRepos(context));
         }
 
         [HttpGet("GetTeams")]
@@ -33,7 +35,6 @@ namespace PokémonTeambuilder.Controllers
                     return Unauthorized(new { message = "User identifier is missing from the token." });
                 }
 
-                // Call the service to get teams by user
                 List<Team> teams = await teamService.GetTeamsByUsernameAsync(usernameClaim);
                 int count = await teamService.GetTeamCountByUsernameAsync(usernameClaim);
 
@@ -53,18 +54,85 @@ namespace PokémonTeambuilder.Controllers
             }
         }
 
+        [HttpPost("CreateTeam")]
+        public async Task<IActionResult> CreateTeam()
+        {
+            try
+            {
+                var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (string.IsNullOrEmpty(usernameClaim))
+                {
+                    return Unauthorized(new { message = "User identifier is missing from the token." });
+                }
+
+                Team team = await teamService.CreateTeamAsync(usernameClaim);
+                TeamDto response = MapTeamToDto(team);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("AddPokemonToTeam")]
+        public async Task<IActionResult> AddPokemonToTeam([FromBody] AddPokemonRequest request)
+        {
+            try
+            {
+                var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (string.IsNullOrEmpty(usernameClaim))
+                {
+                    return Unauthorized(new { message = "User identifier is missing from the token." });
+                }
+
+                Pokemon pokemon = await pokemonService.CreatePokemonAsync(request.BasePokemonId);
+                await teamService.AddPokemonToTeamAsync(request.TeamId, pokemon);
+
+                PokemonDto response = MapPokemonToDto(pokemon);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+
+        public class AddPokemonRequest
+        {
+            public int TeamId { get; set; }
+            public int BasePokemonId { get; set; }
+        }
+
+
         private TeamDto MapTeamToDto(Team team)
         {
+            List<PokemonDto> pokemonDtos = [];
+            if (team.Pokemons != null)
+            {
+                pokemonDtos = team.Pokemons.Select(pokemon => MapPokemonToDto(pokemon)).ToList();
+            }
             return new TeamDto
             {
                 Id = team.Id,
                 Name = team.Name,
-                Pokemons = team.Pokemons.Select(pokemon => MapPokemonToDto(pokemon)).ToList(),
+                Pokemons = pokemonDtos,
             };
         }
 
         private PokemonDto MapPokemonToDto(Pokemon pokemon)
         {
+            ItemDto? item = MapItemToDto(pokemon.Item);
+            List<MoveDto> selectedMoves = [];
+            if(pokemon.SelectedMoves != null)
+            {
+                selectedMoves = pokemon.SelectedMoves.Select(move => MapMoveToDto(move)).ToList();
+            }
             return new PokemonDto
             {
                 PersonalId = pokemon.Id,
@@ -75,28 +143,24 @@ namespace PokémonTeambuilder.Controllers
                 IVs = MapStatsToDto(pokemon.IVs),
                 Gender = pokemon.Gender.ToString(),
                 Id = pokemon.BasePokemon.Id,
-                Item = MapItemToDto(pokemon.Item),
+                Item = item,
+                Name = pokemon.BasePokemon.Name,
+                Sprite = pokemon.BasePokemon.Sprite,
+                Typings = pokemon.BasePokemon.Typings.Select(typing => MapBasePokemonTypingToDto(typing)).ToList(),
                 Level = pokemon.Level,
-                Moves = pokemon.SelectedMoves.Select(move => MapMoveToDto(move)).ToList(),
+                Moves = pokemon.BasePokemon.Moves.Select(move => MapMoveToDto(move)).ToList(),
+                Nature = MapNatureToDto(pokemon.Nature),
+                Nickname = pokemon.Nickname,
+                SelectedMoves = selectedMoves
             };
         }
 
-        private BasePokemonDto MapBasePokemonToDto(BasePokemon basePokemon)
+        private ItemDto? MapItemToDto(Item item)
         {
-            return new BasePokemonDto
+            if (item == null)
             {
-                Id = basePokemon.Id,
-                Name = basePokemon.Name,
-                Abilities = basePokemon.Abilities.Select(ability => MapBasePokemonAbilityToDto(ability)).ToList(),
-                BaseStats = MapStatsToDto(basePokemon.BaseStats),
-                Moves = basePokemon.Moves.Select(move => MapMoveToDto(move)).ToList(),
-                Sprite = basePokemon.Sprite,
-                Typings = basePokemon.Typings.Select(typing => MapBasePokemonTypingToDto(typing)).ToList()
-            };
-        }
-
-        private ItemDto MapItemToDto(Item item)
-        {
+                return null;
+            }
             return new ItemDto
             {
                 Id = item.Id,
@@ -143,6 +207,17 @@ namespace PokémonTeambuilder.Controllers
                 PP = move.PP,
                 Description = move.Description,
                 Typing = new TypingRelationlessDto { Id = move.Typing.Id, Name = move.Typing.Name }
+            };
+        }
+
+        private NatureDto MapNatureToDto(Nature nature)
+        {
+            return new NatureDto
+            {
+                Id = nature.Id,
+                Name = nature.Name,
+                Up = nature.Up != null ? char.ToLower(nature.Up.ToString()[0]) + nature.Up.ToString().Substring(1) : null,
+                Down = nature.Down != null ? char.ToLower(nature.Down.ToString()[0]) + nature.Down.ToString().Substring(1) : null,
             };
         }
 

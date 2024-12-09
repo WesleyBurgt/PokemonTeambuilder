@@ -44,6 +44,17 @@ namespace PokémonTeambuilder.core.Services
             return count;
         }
 
+        public async Task<Team> CreateTeamAsync(string username)
+        {
+            string standardName = "new pokemon team";
+            Team team = new Team
+            {
+                Name = standardName
+            };
+            await teamRepos.CreateTeamAsync(username, team);
+            return team;
+        }
+
         public async Task SetTeamNameAsync(int teamId, string teamName)
         {
             if (teamId <= 0)

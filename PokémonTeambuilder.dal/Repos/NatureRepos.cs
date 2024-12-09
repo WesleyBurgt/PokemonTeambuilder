@@ -26,6 +26,12 @@ namespace PokémonTeambuilder.dal.Repos
             return count;
         }
 
+        public async Task<Nature> GetNatureByIdAsync(int id)
+        {
+            Nature nature = await context.Natures.FirstOrDefaultAsync(nature => nature.Id == id);
+            return nature;
+        }
+
         public async Task SetAllNaturesAsync(List<Nature> natures)
         {
             foreach (Nature nature in natures)

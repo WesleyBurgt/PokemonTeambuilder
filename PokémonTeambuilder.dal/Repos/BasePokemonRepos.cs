@@ -3,6 +3,7 @@ using PokémonTeambuilder.core.DbInterfaces;
 using PokémonTeambuilder.core.Exceptions;
 using PokémonTeambuilder.core.Models;
 using PokémonTeambuilder.dal.DbContext;
+using System.Collections.Generic;
 
 namespace PokémonTeambuilder.dal.Repos
 {
@@ -39,6 +40,24 @@ namespace PokémonTeambuilder.dal.Repos
         {
             int count = await context.BasePokemons.CountAsync();
             return count;
+        }
+
+        public async Task<BasePokemon> GetBasePokemonByIdAsync(int id)
+        {
+            BasePokemon basePokemon = await context.BasePokemons
+                .Include(bp => bp.Typings)
+                    .ThenInclude(bpt => bpt.Typing)
+                        .ThenInclude(t => t.Relationships)
+                            .ThenInclude(tr => tr.RelatedTyping)
+                .Include(bp => bp.Abilities)
+                    .ThenInclude(a => a.Ability)
+                .Include(bp => bp.Moves)
+                    .ThenInclude(m => m.Typing)
+                        .ThenInclude(t => t.Relationships)
+                            .ThenInclude(tr => tr.RelatedTyping)
+                .Include(bp => bp.BaseStats)
+                .FirstOrDefaultAsync(basePokemon => basePokemon.Id == id);
+            return basePokemon;
         }
 
         public async Task SetBasePokemonListAsync(List<BasePokemon> basePokemons)

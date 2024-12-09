@@ -7,6 +7,7 @@ namespace PokémonTeambuilder.core.DbInterfaces
         Task<Team> GetTeamByIdAsync(int id);
         Task<List<Team>> GetTeamsByUsernameAsync(string username);
         Task<int> GetTeamCountByUsernameAsync(string username);
+        Task CreateTeamAsync(string username, Team team);
         Task SetTeamNameAsync(int teamId, string teamName);
         Task AddPokemonToTeamAsync(int teamId, Pokemon pokemon);
         Task RemovePokemonFromTeamAsync(int teamId, int pokemonId);
