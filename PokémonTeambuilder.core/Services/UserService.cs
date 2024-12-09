@@ -13,12 +13,12 @@ namespace PokémonTeambuilder.core.Services
             this.userRepos = userRepos;
         }
 
-        public string HashPassword(string password)
+        private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
-        public bool ValidatePassword(string enteredPassword, string storedHash)
+        private bool ValidatePassword(string enteredPassword, string storedHash)
         {
             return BCrypt.Net.BCrypt.Verify(enteredPassword, storedHash);
         }
