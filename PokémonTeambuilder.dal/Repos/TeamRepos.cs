@@ -20,10 +20,18 @@ namespace PokémonTeambuilder.dal.Repos
             return team;
         }
 
-        public async Task<List<Team>> GetTeamsByUserIdAsync(int userId)
+        public async Task<List<Team>> GetTeamsByUsernameAsync(string username)
         {
-            List<Team> teams = await context.Teams.Where(t => t.UserId == userId).ToListAsync();
+            User user = await context.Users.FirstOrDefaultAsync(t => t.Username == username);
+            List<Team> teams = await context.Teams.Where(t => t.UserId == user.Id).ToListAsync();
             return teams;
+        }
+
+        public async Task<int> GetTeamCountByUsernameAsync(string username)
+        {
+            User user = await context.Users.FirstOrDefaultAsync(t => t.Username == username);
+            int count = await context.Teams.Where(t => t.UserId == user.Id).CountAsync();
+            return count;
         }
 
         public async Task SetTeamNameAsync(int teamId, string teamName)

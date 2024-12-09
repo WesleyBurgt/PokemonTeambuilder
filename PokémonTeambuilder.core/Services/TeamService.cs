@@ -22,17 +22,26 @@ namespace PokémonTeambuilder.core.Services
             return team;
         }
 
-        public async Task<List<Team>> GetTeamsByUserIdAsync(int userId)
+        public async Task<List<Team>> GetTeamsByUsernameAsync(string username)
         {
-            if (userId <= 0)
-                throw new InvalidIdException("User Id cannot be" + userId, userId);
+            if (string.IsNullOrEmpty(username))
+                throw new InvalidNameException("Username cannot be null or empty", username, typeof(string));
 
-            List<Team> teams = await teamRepos.GetTeamsByUserIdAsync(userId);
+            List<Team> teams = await teamRepos.GetTeamsByUsernameAsync(username);
             foreach(Team team in teams)
             {
                 ValidateTeam(team);
             }
             return teams;
+        }
+
+        public async Task<int> GetTeamCountByUsernameAsync(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                    throw new InvalidNameException("Username cannot be null or empty", username, typeof(string));
+
+            int count = await teamRepos.GetTeamCountByUsernameAsync(username);
+            return count;
         }
 
         public async Task SetTeamNameAsync(int teamId, string teamName)
