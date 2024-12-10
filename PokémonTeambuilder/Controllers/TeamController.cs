@@ -77,6 +77,34 @@ namespace PokémonTeambuilder.Controllers
             }
         }
 
+        [HttpPost("SetTeamName")]
+        public async Task<IActionResult> SetTeamName([FromBody] SetTeamNameRequest request)
+        {
+            try
+            {
+                var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (string.IsNullOrEmpty(usernameClaim))
+                {
+                    return Unauthorized(new { message = "User identifier is missing from the token." });
+                }
+
+                await teamService.SetTeamNameAsync(request.TeamId, request.TeamName);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+        public class SetTeamNameRequest
+        {
+            public int TeamId { get; set; }
+            public string TeamName { get; set; }
+        }
+
         [HttpPost("AddPokemonToTeam")]
         public async Task<IActionResult> AddPokemonToTeam([FromBody] AddPokemonRequest request)
         {
@@ -112,6 +140,12 @@ namespace PokémonTeambuilder.Controllers
             }
         }
 
+        public class AddPokemonRequest
+        {
+            public int TeamId { get; set; }
+            public int BasePokemonId { get; set; }
+        }
+
         [HttpPost("DeletePokemonFromTeam")]
         public async Task<IActionResult> DeletePokemonFromTeam([FromBody] DeletePokemonRequest request)
         {
@@ -132,12 +166,6 @@ namespace PokémonTeambuilder.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
-        }
-
-        public class AddPokemonRequest
-        {
-            public int TeamId { get; set; }
-            public int BasePokemonId { get; set; }
         }
 
         public class DeletePokemonRequest
