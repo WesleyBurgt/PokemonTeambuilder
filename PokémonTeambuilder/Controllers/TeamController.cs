@@ -80,6 +80,7 @@ namespace PokémonTeambuilder.Controllers
         [HttpPost("AddPokemonToTeam")]
         public async Task<IActionResult> AddPokemonToTeam([FromBody] AddPokemonRequest request)
         {
+            Pokemon pokemon;
             try
             {
                 var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
@@ -89,7 +90,15 @@ namespace PokémonTeambuilder.Controllers
                     return Unauthorized(new { message = "User identifier is missing from the token." });
                 }
 
-                Pokemon pokemon = await pokemonService.CreatePokemonAsync(request.BasePokemonId);
+                pokemon = await pokemonService.CreatePokemonAsync(request.BasePokemonId);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+
+            try
+            {
                 await teamService.AddPokemonToTeamAsync(request.TeamId, pokemon);
 
                 PokemonDto response = MapPokemonToDto(pokemon);
@@ -98,6 +107,7 @@ namespace PokémonTeambuilder.Controllers
             }
             catch (Exception ex)
             {
+                await pokemonService.DeletePokemonAsync(pokemon.Id);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }

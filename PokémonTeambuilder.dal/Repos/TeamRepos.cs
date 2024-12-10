@@ -107,7 +107,6 @@ namespace PokémonTeambuilder.dal.Repos
             return teams;
         }
 
-
         public async Task<int> GetTeamCountByUsernameAsync(string username)
         {
             User user = await context.Users.FirstOrDefaultAsync(t => t.Username == username);
@@ -131,23 +130,44 @@ namespace PokémonTeambuilder.dal.Repos
             await context.SaveChangesAsync();
         }
 
-        public async Task AddPokemonToTeamAsync(int teamId, Pokemon pokemon)
+        public async Task<int> GetPokemonCountAsync(int teamId)
         {
             Team team = await context.Teams.FirstOrDefaultAsync(t => t.Id == teamId);
+            int count = team.PokemonCount;
+            return count;
+        }
+
+        public async Task AddPokemonToTeamAsync(int teamId, Pokemon pokemon)
+        {
+            Team team = await context.Teams
+                .Include(t => t.Pokemons)
+                .FirstOrDefaultAsync(t => t.Id == teamId);
+
+            if (team == null)
+                throw new Exception("Team not found");
             if (team.Pokemons == null)
-            {
-                team.Pokemons = [];
-            }
+                team.Pokemons = new List<Pokemon>();
+
             team.Pokemons.Add(pokemon);
+            team.PokemonCount = team.Pokemons.Count;
             context.Teams.Update(team);
             await context.SaveChangesAsync();
         }
 
         public async Task RemovePokemonFromTeamAsync(int teamId, int pokemonId)
         {
-            Team team = await context.Teams.FirstOrDefaultAsync(t => t.Id == teamId);
+            Team team = await context.Teams
+                .Include(t => t.Pokemons)
+                .FirstOrDefaultAsync(t => t.Id == teamId);
+
+            if (team == null)
+                throw new Exception("Team not found");
+            if (team.Pokemons == null)
+                team.Pokemons = new List<Pokemon>();
+
             Pokemon pokemon = team.Pokemons.FirstOrDefault(p => p.Id == pokemonId);
             team.Pokemons.Remove(pokemon);
+            team.PokemonCount = team.Pokemons.Count;
             context.Teams.Update(team);
             await context.SaveChangesAsync();
         }
