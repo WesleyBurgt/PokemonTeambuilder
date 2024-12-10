@@ -102,6 +102,27 @@ namespace PokémonTeambuilder.Controllers
             }
         }
 
+        [HttpPost("DeletePokemonFromTeam")]
+        public async Task<IActionResult> DeletePokemonFromTeam([FromBody] DeletePokemonRequest request)
+        {
+            try
+            {
+                var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
+
+                if (string.IsNullOrEmpty(usernameClaim))
+                {
+                    return Unauthorized(new { message = "User identifier is missing from the token." });
+                }
+
+                await pokemonService.DeletePokemonAsync(request.PokemonId);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
 
         public class AddPokemonRequest
         {
@@ -109,6 +130,10 @@ namespace PokémonTeambuilder.Controllers
             public int BasePokemonId { get; set; }
         }
 
+        public class DeletePokemonRequest
+        {
+            public int PokemonId { get; set; }
+        }
 
         private TeamDto MapTeamToDto(Team team)
         {
