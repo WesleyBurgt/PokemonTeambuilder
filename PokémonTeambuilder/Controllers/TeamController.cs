@@ -159,6 +159,7 @@ namespace PokémonTeambuilder.Controllers
                     return Unauthorized(new { message = "User identifier is missing from the token." });
                 }
 
+                await teamService.RemovePokemonFromTeamAsync(request.TeamId, request.PokemonId);
                 await pokemonService.DeletePokemonAsync(request.PokemonId);
 
                 return Ok();
@@ -171,6 +172,7 @@ namespace PokémonTeambuilder.Controllers
 
         public class DeletePokemonRequest
         {
+            public int TeamId { get; set; }
             public int PokemonId { get; set; }
         }
 
