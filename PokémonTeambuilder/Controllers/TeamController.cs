@@ -229,6 +229,7 @@ namespace PokémonTeambuilder.Controllers
                 for (int slot = 0; slot < pokemon.SelectedMoves.Count; slot++)
                 {
                     SelectedMoveDto selectedMoveDto = MapSelectedMoveToDto(pokemon.SelectedMoves.ToArray()[slot], slot);
+                    selectedMoves.Add(selectedMoveDto);
                 }
             }
             return new PokemonDto
