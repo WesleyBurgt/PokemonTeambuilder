@@ -42,9 +42,6 @@ namespace PokémonTeambuilder.dal.Repos
                     .ThenInclude(p => p.Nature)
                 .Include(t => t.Pokemons)
                     .ThenInclude(p => p.SelectedMoves)
-                        .ThenInclude(m => m.Typing)
-                            .ThenInclude(t => t.Relationships)
-                                .ThenInclude(tr => tr.RelatedTyping)
                 .Include(t => t.Pokemons)
                     .ThenInclude(p => p.EVs)
                 .Include(t => t.Pokemons)
@@ -75,9 +72,6 @@ namespace PokémonTeambuilder.dal.Repos
                 .Include(p => p.Item)
                 .Include(p => p.Nature)
                 .Include(p => p.SelectedMoves)
-                    .ThenInclude(m => m.Typing)
-                        .ThenInclude(t => t.Relationships)
-                            .ThenInclude(tr => tr.RelatedTyping)
                 .Include(p => p.EVs)
                 .Include(p => p.IVs)
                 .FirstOrDefaultAsync(pokemon => pokemon.Id == id);
@@ -106,6 +100,9 @@ namespace PokémonTeambuilder.dal.Repos
                 .FirstOrDefaultAsync(bp => bp.Id == pokemon.BasePokemon.Id);
 
             pokemon.BasePokemon = basePokemon;
+
+            List<SelectedMove> selectedMoves = await context.SelectedMoves.Where(sm => sm.PokemonId == pokemon.Id).ToListAsync();
+            context.SelectedMoves.RemoveRange(selectedMoves);
 
             context.Update(pokemon);
             await context.SaveChangesAsync();

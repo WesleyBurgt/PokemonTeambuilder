@@ -10,7 +10,7 @@
         public Item? Item { get; set; }
         public Nature Nature { get; set; }
         public int selectedAbilitySlot { get; set; }
-        public ICollection<Move> SelectedMoves { get; set; }
+        public ICollection<SelectedMove> SelectedMoves { get; set; }
 
         public int EVsId { get; set; }
         public Stats EVs { get; set; }

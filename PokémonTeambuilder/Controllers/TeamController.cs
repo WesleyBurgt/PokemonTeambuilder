@@ -226,9 +226,9 @@ namespace PokémonTeambuilder.Controllers
             List<SelectedMoveDto> selectedMoves = [];
             if(pokemon.SelectedMoves != null)
             {
-                for (int slot = 0; slot < pokemon.SelectedMoves.Count; slot++)
+                foreach(SelectedMove selectedMove in pokemon.SelectedMoves)
                 {
-                    SelectedMoveDto selectedMoveDto = MapSelectedMoveToDto(pokemon.SelectedMoves.ToArray()[slot], slot);
+                    SelectedMoveDto selectedMoveDto = MapSelectedMoveToDto(selectedMove);
                     selectedMoves.Add(selectedMoveDto);
                 }
             }
@@ -254,12 +254,12 @@ namespace PokémonTeambuilder.Controllers
             };
         }
 
-        private SelectedMoveDto MapSelectedMoveToDto(Move move, int slot)
+        private SelectedMoveDto MapSelectedMoveToDto(SelectedMove selectedMove)
         {
             return new SelectedMoveDto
             {
-                Id = move.Id,
-                Slot = slot
+                Id = selectedMove.MoveId,
+                Slot = selectedMove.Slot
             };
         }
 
@@ -357,6 +357,18 @@ namespace PokémonTeambuilder.Controllers
 
         private Pokemon MapDtoToPokemon(PokemonDto dto)
         {
+            List<SelectedMove> selectedMoves = [];
+            if(dto.SelectedMoves != null)
+            {
+                foreach(SelectedMoveDto selectedMoveDto in dto.SelectedMoves)
+                {
+                    if (selectedMoveDto != null)
+                    {
+                        SelectedMove selectedMove = MapDtoToSelectedMove(selectedMoveDto, dto.Id);
+                        selectedMoves.Add(selectedMove);
+                    }
+                }
+            }
             Pokemon pokemon = new Pokemon
             {
                 Id = dto.PersonalId,
@@ -367,7 +379,7 @@ namespace PokémonTeambuilder.Controllers
                 selectedAbilitySlot = dto.Ability.Slot,
                 EVs = MapDtoToStats(dto.EVs),
                 IVs = MapDtoToStats(dto.IVs),
-                SelectedMoves = MapDtoToSelectedMoves(dto.SelectedMoves, dto.Moves),
+                SelectedMoves = selectedMoves,
                 BasePokemon = new BasePokemon
                 {
                     Id = dto.Id,
@@ -397,19 +409,14 @@ namespace PokémonTeambuilder.Controllers
             return pokemon;
         }
 
-        private List<Move> MapDtoToSelectedMoves(List<SelectedMoveDto> selectedMoveDtos, List<MoveDto> moveDtos)
+        private SelectedMove MapDtoToSelectedMove(SelectedMoveDto selectedMoveDto, int pokemonId)
         {
-            if (selectedMoveDtos == null) return [];
-
-            List<Move> result = [];
-            foreach(SelectedMoveDto selectedMoveDto in selectedMoveDtos)
+            return new SelectedMove
             {
-                if (selectedMoveDto != null)
-                {
-                    result.Add(MapDtoToMove(moveDtos.FirstOrDefault(move => move.Id == selectedMoveDto.Id)));
-                }
-            }
-            return result;
+                MoveId = selectedMoveDto.Id,
+                PokemonId = pokemonId,
+                Slot = selectedMoveDto.Slot
+            };
         }
 
         private Item MapDtoToItem(ItemDto dto)

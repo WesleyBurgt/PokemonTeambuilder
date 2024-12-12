@@ -11,6 +11,5 @@
         public int? Accuracy { get; set; }
         public int? PP { get; set; }
         public ICollection<BasePokemon> BasePokemons { get; set; }
-        public ICollection<Pokemon> Pokemons { get; set; }
     }
 }

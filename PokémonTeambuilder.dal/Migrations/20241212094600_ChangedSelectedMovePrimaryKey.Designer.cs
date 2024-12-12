@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PokémonTeambuilder.dal.DbContext;
 
@@ -11,9 +12,11 @@ using PokémonTeambuilder.dal.DbContext;
 namespace PokémonTeambuilder.dal.Migrations
 {
     [DbContext(typeof(PokemonTeambuilderDbContext))]
-    partial class PokemonTeambuilderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241212094600_ChangedSelectedMovePrimaryKey")]
+    partial class ChangedSelectedMovePrimaryKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,24 +252,16 @@ namespace PokémonTeambuilder.dal.Migrations
 
             modelBuilder.Entity("PokémonTeambuilder.core.Models.SelectedMove", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MoveId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PokemonId")
                         .HasColumnType("int");
 
                     b.Property<int>("Slot")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("MoveId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("PokemonId");
+                    b.HasKey("PokemonId", "Slot");
 
                     b.ToTable("SelectedMoves");
                 });

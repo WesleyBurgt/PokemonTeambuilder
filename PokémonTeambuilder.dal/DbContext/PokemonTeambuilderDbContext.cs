@@ -19,6 +19,7 @@ namespace PokémonTeambuilder.dal.DbContext
         public DbSet<Typing> Typings { get; set; }
         public DbSet<TypingRelationship> TypingRelationships { get; set; }
         public DbSet<Move> Moves { get; set; }
+        public DbSet<SelectedMove> SelectedMoves { get; set; }
         public DbSet<Stats> Stats { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Nature> Natures { get; set; }
