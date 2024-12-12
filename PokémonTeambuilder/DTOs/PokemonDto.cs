@@ -9,7 +9,7 @@
         public ItemDto? Item { get; set; }
         public NatureDto Nature { get; set; }
         public AbilityDto Ability { get; set; }
-        public List<MoveDto> SelectedMoves { get; set; }
+        public List<SelectedMoveDto> SelectedMoves { get; set; }
         public StatsDto EVs { get; set; }
         public StatsDto IVs { get; set; }
     }

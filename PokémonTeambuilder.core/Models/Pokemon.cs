@@ -9,7 +9,7 @@
         public BasePokemon BasePokemon { get; set; }
         public Item? Item { get; set; }
         public Nature Nature { get; set; }
-        public BasePokemonAbility Ability { get; set; }
+        public int selectedAbilitySlot { get; set; }
         public ICollection<Move> SelectedMoves { get; set; }
 
         public int EVsId { get; set; }
