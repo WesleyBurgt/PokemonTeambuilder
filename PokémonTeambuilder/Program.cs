@@ -28,7 +28,7 @@ namespace PokémonTeambuilder
             var connectionString = builder.Configuration.GetConnectionString("PokemonBuilderDatabaseConnectionString");
 
             builder.Services.AddDbContext<PokemonTeambuilderDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString,sqlOptions => sqlOptions.CommandTimeout(180)));
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
