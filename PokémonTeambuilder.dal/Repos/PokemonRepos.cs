@@ -18,25 +18,6 @@ namespace PokémonTeambuilder.dal.Repos
         {
             Team team = await context.Teams
                 .Include(t => t.Pokemons)
-                    .ThenInclude(p => p.BasePokemon)
-                        .ThenInclude(bp => bp.Typings)
-                            .ThenInclude(bt => bt.Typing)
-                                .ThenInclude(t => t.Relationships)
-                                    .ThenInclude(tr => tr.RelatedTyping)
-                .Include(t => t.Pokemons)
-                    .ThenInclude(p => p.BasePokemon)
-                        .ThenInclude(bp => bp.Abilities)
-                            .ThenInclude(bpa => bpa.Ability)
-                .Include(t => t.Pokemons)
-                    .ThenInclude(p => p.BasePokemon)
-                        .ThenInclude(bp => bp.BaseStats)
-                .Include(t => t.Pokemons)
-                    .ThenInclude(p => p.BasePokemon)
-                        .ThenInclude(bp => bp.Moves)
-                            .ThenInclude(m => m.Typing)
-                                .ThenInclude(t => t.Relationships)
-                                    .ThenInclude(tr => tr.RelatedTyping)
-                .Include(t => t.Pokemons)
                     .ThenInclude(p => p.Item)
                 .Include(t => t.Pokemons)
                     .ThenInclude(p => p.Nature)
@@ -97,7 +78,7 @@ namespace PokémonTeambuilder.dal.Repos
             BasePokemon basePokemon = await context.BasePokemons
                 .Include(bp => bp.BaseStats)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(bp => bp.Id == pokemon.BasePokemon.Id);
+                .FirstOrDefaultAsync(bp => bp.Id == pokemon.BasePokemonId);
 
             pokemon.BasePokemon = basePokemon;
 

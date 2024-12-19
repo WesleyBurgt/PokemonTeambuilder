@@ -237,19 +237,13 @@ namespace PokémonTeambuilder.Controllers
             return new PokemonDto
             {
                 PersonalId = pokemon.Id,
-                Abilities = pokemon.BasePokemon.Abilities.Select(ability => MapBasePokemonAbilityToDto(ability)).ToList(),
+                BasePokemonId = pokemon.BasePokemon.Id,
                 Ability = MapBasePokemonAbilityToDto(pokemon.BasePokemon.Abilities.FirstOrDefault(a => a.Slot == pokemon.selectedAbilitySlot)),
-                BaseStats = MapStatsToDto(pokemon.BasePokemon.BaseStats),
                 EVs = MapStatsToDto(pokemon.EVs),
                 IVs = MapStatsToDto(pokemon.IVs),
                 Gender = pokemon.Gender.ToString(),
-                Id = pokemon.BasePokemon.Id,
                 Item = item,
-                Name = pokemon.BasePokemon.Name,
-                Sprite = pokemon.BasePokemon.Sprite,
-                Typings = pokemon.BasePokemon.Typings.Select(typing => MapBasePokemonTypingToDto(typing)).ToList(),
                 Level = pokemon.Level,
-                Moves = pokemon.BasePokemon.Moves.Select(move => MapMoveToDto(move)).ToList(),
                 Nature = MapNatureToDto(pokemon.Nature),
                 Nickname = pokemon.Nickname,
                 SelectedMoves = selectedMoves
@@ -305,21 +299,6 @@ namespace PokémonTeambuilder.Controllers
             };
         }
 
-        private MoveDto MapMoveToDto(Move move)
-        {
-            return new MoveDto
-            {
-                Id = move.Id,
-                Name = move.Name,
-                Category = move.Category,
-                Accuracy = move.Accuracy,
-                BasePower = move.BasePower,
-                PP = move.PP,
-                Description = move.Description,
-                Typing = new TypingRelationlessDto { Id = move.Typing.Id, Name = move.Typing.Name }
-            };
-        }
-
         private NatureDto MapNatureToDto(Nature nature)
         {
             return new NatureDto
@@ -328,32 +307,6 @@ namespace PokémonTeambuilder.Controllers
                 Name = nature.Name,
                 Up = nature.Up != null ? char.ToLower(nature.Up.ToString()[0]) + nature.Up.ToString().Substring(1) : null,
                 Down = nature.Down != null ? char.ToLower(nature.Down.ToString()[0]) + nature.Down.ToString().Substring(1) : null,
-            };
-        }
-
-        private BasePokemonTypingDto MapBasePokemonTypingToDto(BasePokemonTyping basePokemonTyping)
-        {
-            return new BasePokemonTypingDto
-            {
-                Slot = basePokemonTyping.Slot,
-                Typing = new TypingDto
-                {
-                    Id = basePokemonTyping.Typing.Id,
-                    Name = basePokemonTyping.Typing.Name,
-
-                    Weaknesses = basePokemonTyping.Typing.Relationships
-                    .Where(r => r.Relation == TypingRelation.weak)
-                    .Select(r => new TypingRelationlessDto { Id = r.RelatedTyping.Id, Name = r.RelatedTyping.Name })
-                    .ToList(),
-                    Resistances = basePokemonTyping.Typing.Relationships
-                    .Where(r => r.Relation == TypingRelation.resist)
-                    .Select(r => new TypingRelationlessDto { Id = r.RelatedTyping.Id, Name = r.RelatedTyping.Name })
-                    .ToList(),
-                    Immunities = basePokemonTyping.Typing.Relationships
-                    .Where(r => r.Relation == TypingRelation.immune)
-                    .Select(r => new TypingRelationlessDto { Id = r.RelatedTyping.Id, Name = r.RelatedTyping.Name })
-                    .ToList()
-                }
             };
         }
 
@@ -366,7 +319,7 @@ namespace PokémonTeambuilder.Controllers
                 {
                     if (selectedMoveDto != null)
                     {
-                        SelectedMove selectedMove = MapDtoToSelectedMove(selectedMoveDto, dto.Id);
+                        SelectedMove selectedMove = MapDtoToSelectedMove(selectedMoveDto, dto.BasePokemonId);
                         selectedMoves.Add(selectedMove);
                     }
                 }
@@ -382,32 +335,9 @@ namespace PokémonTeambuilder.Controllers
                 EVs = MapDtoToStats(dto.EVs),
                 IVs = MapDtoToStats(dto.IVs),
                 SelectedMoves = selectedMoves,
-                BasePokemon = new BasePokemon
-                {
-                    Id = dto.Id,
-                    Name = dto.Name,
-                    Sprite = dto.Sprite,
-                    Abilities = dto.Abilities?.Select(MapDtoToBasePokemonAbility).ToList(),
-                    Typings = dto.Typings?.Select(MapDtoToBasePokemonTyping).ToList(),
-                    Moves = dto.Moves?.Select(MapDtoToMove).ToList(),
-                    BaseStats = MapDtoToStats(dto.BaseStats)
-                },
+                BasePokemonId = dto.BasePokemonId,
                 Nature = MapDtoToNature(dto.Nature)
             };
-            foreach (BasePokemonAbility ability in pokemon.BasePokemon.Abilities)
-            {
-                ability.BasePokemon = pokemon.BasePokemon;
-                ability.BasePokemonId = pokemon.BasePokemon.Id;
-            }
-            foreach (BasePokemonTyping typing in pokemon.BasePokemon.Typings)
-            {
-                typing.BasePokemon = pokemon.BasePokemon;
-                typing.BasePokemonId = pokemon.BasePokemon.Id;
-                foreach(TypingRelationship typingRelationship in typing.Typing.Relationships)
-                {
-                    typingRelationship.TypingId = typing.TypingId;
-                }
-            }
             return pokemon;
         }
 
@@ -449,43 +379,6 @@ namespace PokémonTeambuilder.Controllers
             };
         }
 
-        private Move MapDtoToMove(MoveDto dto)
-        {
-            if (dto == null) return null;
-
-            return new Move
-            {
-                Id = dto.Id,
-                Name = dto.Name,
-                Category = dto.Category,
-                Accuracy = dto.Accuracy,
-                BasePower = dto.BasePower,
-                PP = dto.PP,
-                Description = dto.Description,
-                Typing = new Typing
-                {
-                    Id = dto.Typing.Id,
-                    Name = dto.Typing.Name
-                }
-            };
-        }
-
-        private BasePokemonAbility MapDtoToBasePokemonAbility(AbilityDto dto)
-        {
-            return new BasePokemonAbility
-            {
-                Ability = new Ability
-                {
-                    Id = dto.Id,
-                    Name = dto.Name,
-                    Description = dto.Description
-                },
-                AbilityId = dto.Id,
-                IsHidden = dto.IsHidden,
-                Slot = dto.Slot
-            };
-        }
-
         private Nature MapDtoToNature(NatureDto dto)
         {
             return new Nature
@@ -494,27 +387,6 @@ namespace PokémonTeambuilder.Controllers
                 Name = dto.Name,
                 Up = string.IsNullOrEmpty(dto.Up) ? null : Enum.TryParse<StatsEnum>(dto.Up, true, out var upStat) ? upStat : throw new ArgumentException($"Invalid Up value: {dto.Up}"),
                 Down = string.IsNullOrEmpty(dto.Down) ? null : Enum.TryParse<StatsEnum>(dto.Down, true, out var downStat) ? downStat : throw new ArgumentException($"Invalid Down value: {dto.Down}")
-            };
-        }
-
-        private BasePokemonTyping MapDtoToBasePokemonTyping(BasePokemonTypingDto dto)
-        {
-            return new BasePokemonTyping
-            {
-                Slot = dto.Slot,
-                TypingId = dto.Typing.Id,
-                Typing = new Typing
-                {
-                    Id = dto.Typing.Id,
-                    Name = dto.Typing.Name,
-                    Relationships = dto.Typing.Weaknesses
-                        .Select(w => new TypingRelationship { RelatedTypingId = w.Id, RelatedTyping = new Typing { Id = w.Id, Name = w.Name }, Relation = TypingRelation.weak })
-                        .Concat(dto.Typing.Resistances
-                            .Select(r => new TypingRelationship { RelatedTypingId = r.Id, RelatedTyping = new Typing { Id = r.Id, Name = r.Name }, Relation = TypingRelation.resist }))
-                        .Concat(dto.Typing.Immunities
-                            .Select(i => new TypingRelationship { RelatedTypingId = i.Id, RelatedTyping = new Typing { Id = i.Id, Name = i.Name }, Relation = TypingRelation.immune }))
-                        .ToList()
-                }
             };
         }
     }
