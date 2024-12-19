@@ -7,7 +7,7 @@
         public List<BasePokemonTypingDto> Typings { get; set; }
         public List<AbilityDto> Abilities { get; set; }
         public StatsDto BaseStats { get; set; }
-        public List<MoveDto> Moves { get; set; }
+        public List<int> MoveIds { get; set; }
         public string Sprite { get; set; }
     }
 }

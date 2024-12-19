@@ -54,7 +54,7 @@ namespace PokémonTeambuilder.Controllers
                 Name = basePokemon.Name,
                 Abilities = basePokemon.Abilities.Select(ability => MapBasePokemonAbilityToDto(ability)).ToList(),
                 BaseStats = MapStatsToDto(basePokemon.BaseStats),
-                Moves = basePokemon.Moves.Select(move => MapMoveToDto(move)).ToList(),
+                MoveIds = basePokemon.Moves.Select(move => move.Id).ToList(),
                 Sprite = basePokemon.Sprite,
                 Typings = basePokemon.Typings.Select(typing => MapBasePokemonTypingToDto(typing)).ToList()
             };
@@ -84,22 +84,6 @@ namespace PokémonTeambuilder.Controllers
                 Speed = stats.Speed
             };
         }
-
-        private MoveDto MapMoveToDto(Move move)
-        {
-            return new MoveDto
-            {
-                Id = move.Id,
-                Name = move.Name,
-                Category = move.Category,
-                Accuracy = move.Accuracy,
-                BasePower = move.BasePower,
-                PP = move.PP,
-                Description = move.Description,
-                Typing = new TypingRelationlessDto { Id = move.Typing.Id, Name = move.Typing.Name }
-            };
-        }
-
 
         private BasePokemonTypingDto MapBasePokemonTypingToDto(BasePokemonTyping basePokemonTyping)
         {
