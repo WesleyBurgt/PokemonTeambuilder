@@ -17,8 +17,16 @@ namespace PokémonTeambuilder.dal.Repos
 
         public async Task<List<Move>> GetAllMovesAsync()
         {
-            List<Move> moves = await context.Moves.ToListAsync();
+            List<Move> moves = await context.Moves
+                .Include(m => m.Typing)
+                .ToListAsync();
             return moves;
+        }
+
+        public async Task<int> GetMoveCountAsync()
+        {
+            int count = await context.Moves.CountAsync();
+            return count;
         }
 
         public async Task SetAllMovesAsync(List<Move> moves)
