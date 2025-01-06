@@ -46,6 +46,10 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - 
+        name: List files in context
+        run: ls -R .
+
+      - 
         name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
