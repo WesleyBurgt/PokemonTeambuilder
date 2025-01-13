@@ -39,7 +39,7 @@ namespace PokémonTeambuilder.Controllers
                 await moveService.FetchAndSaveMovesAsync();
                 await basePokemonService.FetchAndSaveBasePokemonsAsync();
 
-                return Ok();
+                return Ok("Database updated successfully");
             }
             catch (Exception ex)
             {
@@ -48,13 +48,13 @@ namespace PokémonTeambuilder.Controllers
         }
 
         [HttpPost("UpdateNatures")]
-        public async Task<IActionResult> UpdateNAtures()
+        public async Task<IActionResult> UpdateNatures()
         {
             try
             {
                 await natureService.FetchAndSaveNaturesAsync();
 
-                return Ok();
+                return Ok("Natures updated successfully");
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace PokémonTeambuilder.Controllers
             {
                 await itemService.FetchAndSaveItemsAsync();
 
-                return Ok();
+                return Ok("Items updated successfully");
             }
             catch (Exception ex)
             {
@@ -84,7 +84,7 @@ namespace PokémonTeambuilder.Controllers
             {
                 await abilityService.FetchAndSaveAbilitiesAsync();
 
-                return Ok();
+                return Ok("Abilities updated successfully");
             }
             catch (Exception ex)
             {
@@ -99,7 +99,7 @@ namespace PokémonTeambuilder.Controllers
             {
                 await typingService.FetchAndSaveTypingsAsync();
 
-                return Ok();
+                return Ok("Typings updated successfully");
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace PokémonTeambuilder.Controllers
             {
                 await moveService.FetchAndSaveMovesAsync();
 
-                return Ok();
+                return Ok("Moves updated successfully");
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace PokémonTeambuilder.Controllers
             {
                 await basePokemonService.FetchAndSaveBasePokemonsAsync();
 
-                return Ok();
+                return Ok("BasePokemons updated successfully");
             }
             catch (Exception ex)
             {
