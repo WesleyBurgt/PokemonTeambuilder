@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using PokémonTeambuilder.dal.DbContext;
+using System;
 
 namespace PokémonTeambuilder
 {
@@ -46,6 +47,12 @@ namespace PokémonTeambuilder
                 });
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<PokemonTeambuilderDbContext>();
+                dbContext.Database.Migrate();
+            }
 
             app.UseCors(options =>
                 options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
