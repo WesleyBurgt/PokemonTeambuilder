@@ -10,7 +10,7 @@
 ### Database
 
 Run a MSSQL server on the standard port (1433) \
-If you need help, Microsoft has resources for setting up the database here
+If you need help, Microsoft has resources for setting up the database at https://learn.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server?view=sql-server-ver16
 
 ### Pulling
 
