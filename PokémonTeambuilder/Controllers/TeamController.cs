@@ -81,6 +81,11 @@ namespace PokémonTeambuilder.Controllers
         [HttpPost("SetTeamName")]
         public async Task<IActionResult> SetTeamName([FromBody] SetTeamNameRequest request)
         {
+            if(!ModelState.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = "request is not valid" });
+            }
+
             try
             {
                 var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
@@ -109,6 +114,11 @@ namespace PokémonTeambuilder.Controllers
         [HttpPost("AddPokemonToTeam")]
         public async Task<IActionResult> AddPokemonToTeam([FromBody] AddPokemonRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = "request is not valid" });
+            }
+
             Pokemon pokemon;
             try
             {
@@ -150,6 +160,11 @@ namespace PokémonTeambuilder.Controllers
         [HttpPost("DeletePokemonFromTeam")]
         public async Task<IActionResult> DeletePokemonFromTeam([FromBody] DeletePokemonRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = "request is not valid" });
+            }
+
             try
             {
                 var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
@@ -179,6 +194,11 @@ namespace PokémonTeambuilder.Controllers
         [HttpPost("UpdatePokemonFromTeam")]
         public async Task<IActionResult> UpdatePokemonFromTeam([FromBody] UpdatePokemonRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = "request is not valid" });
+            }
+
             try
             {
                 var usernameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
