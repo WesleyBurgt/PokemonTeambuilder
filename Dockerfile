@@ -60,6 +60,9 @@ RUN apk add --no-cache krb5-libs
 
 WORKDIR /app
 
+# Set a default environment variable for SQL password (can be overridden at runtime)
+ENV SQL_PASSWORD_PokemonTeambuilder=sqlPassword
+
 # Copy everything needed to run the app from the "build" stage.
 COPY --from=build /app .
 
