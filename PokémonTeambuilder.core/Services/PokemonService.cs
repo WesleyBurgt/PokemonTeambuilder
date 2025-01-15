@@ -20,7 +20,7 @@ namespace PokémonTeambuilder.core.Services
         public async Task<Pokemon> GetPokemonByIdAsync(int id)
         {
             Pokemon pokemon = await pokemonRepos.GetPokemonByIdAsync(id);
-            ValidatePokemon(pokemon, true);
+            ValidatePokemon(pokemon);
             return pokemon;
         }
 
@@ -62,7 +62,7 @@ namespace PokémonTeambuilder.core.Services
                 Nickname = basePokemon.Name,
             };
             pokemon = await pokemonRepos.CreatePokemonAsync(pokemon);
-            ValidatePokemon(pokemon, true);
+            ValidatePokemon(pokemon);
             return pokemon;
         }
 
@@ -73,11 +73,11 @@ namespace PokémonTeambuilder.core.Services
 
         public async Task UpdatePokemonAsync(Pokemon pokemon)
         {
-            ValidatePokemon(pokemon, false);
+            ValidatePokemon(pokemon);
             await pokemonRepos.UpdatePokemonAsync(pokemon);
         }
 
-        private void ValidatePokemon(Pokemon pokemon, bool ValidateBasePokemon)
+        private static void ValidatePokemon(Pokemon pokemon)
         {
             if (pokemon.Id <= 0)
                 throw new InvalidIdException("Pokemon Id cannot be" + pokemon.BasePokemon.Id, pokemon.BasePokemon.Id, pokemon.GetType());
@@ -89,39 +89,40 @@ namespace PokémonTeambuilder.core.Services
                 throw new InvalidVariableException("Pokemon IVs cannot be null", typeof(Stats));
             if (pokemon.SelectedMoves == null)
                 pokemon.SelectedMoves = [];
-
             if (pokemon.BasePokemonId <= 0)
                 throw new InvalidIdException("BasePokemon Id cannot be" + pokemon.BasePokemonId, pokemon.BasePokemonId, pokemon.GetType());
-
             if (pokemon.BasePokemon != null)
-            {
-                if (pokemon.BasePokemon.Id <= 0)
-                    throw new InvalidIdException("BasePokemon Id cannot be" + pokemon.BasePokemon.Id, pokemon.BasePokemon.Id, pokemon.BasePokemon.GetType());
-                if (string.IsNullOrEmpty(pokemon.BasePokemon.Name))
-                    throw new InvalidNameException("BasePokemon Name cannot be null or empty", pokemon.BasePokemon.Name, pokemon.BasePokemon.GetType());
-                if (pokemon.BasePokemon.Typings == null)
-                    throw new InvalidVariableException("Pokemon Typing cannot be null", pokemon.BasePokemon.Typings, pokemon.BasePokemon.GetType());
-                if (pokemon.BasePokemon.Typings.Count <= 0)
-                    throw new InvalidAmountException("Pokemon cannot have no typing", pokemon.BasePokemon.Typings.Count, new Range(1, int.MaxValue));
-                if (pokemon.BasePokemon.BaseStats == null)
-                    throw new InvalidVariableException("Pokemon Stats cannot be null", pokemon.BasePokemon.BaseStats, typeof(BasePokemon));
-                if (pokemon.BasePokemon.BaseStats.Hp <= 0)
-                    throw new InvalidVariableException("Pokemon Hp cannot be" + pokemon.BasePokemon.BaseStats.Hp, pokemon.BasePokemon.BaseStats.Hp, pokemon.BasePokemon.BaseStats.GetType());
-                if (pokemon.BasePokemon.BaseStats.Attack <= 0)
-                    throw new InvalidVariableException("Pokemon Attack cannot be" + pokemon.BasePokemon.BaseStats.Attack, pokemon.BasePokemon.BaseStats.Attack, pokemon.BasePokemon.BaseStats.GetType());
-                if (pokemon.BasePokemon.BaseStats.Defense <= 0)
-                    throw new InvalidVariableException("Pokemon Defense cannot be" + pokemon.BasePokemon.BaseStats.Defense, pokemon.BasePokemon.BaseStats.Defense, pokemon.BasePokemon.BaseStats.GetType());
-                if (pokemon.BasePokemon.BaseStats.SpecialAttack <= 0)
-                    throw new InvalidVariableException("Pokemon SpecialAttack cannot be" + pokemon.BasePokemon.BaseStats.SpecialAttack, pokemon.BasePokemon.BaseStats.SpecialAttack, pokemon.BasePokemon.BaseStats.GetType());
-                if (pokemon.BasePokemon.BaseStats.SpecialDefense <= 0)
-                    throw new InvalidVariableException("Pokemon SpecialDefense cannot be" + pokemon.BasePokemon.BaseStats.SpecialDefense, pokemon.BasePokemon.BaseStats.SpecialDefense, pokemon.BasePokemon.BaseStats.GetType());
-                if (pokemon.BasePokemon.BaseStats.Speed <= 0)
-                    throw new InvalidVariableException("Pokemon Speed cannot be" + pokemon.BasePokemon.BaseStats.Speed, pokemon.BasePokemon.BaseStats.Speed, pokemon.BasePokemon.BaseStats.GetType());
-                if (pokemon.BasePokemon.Abilities == null)
-                    throw new InvalidVariableException("Pokemon Abilities cannot be null", pokemon.BasePokemon.Abilities, pokemon.GetType());
-                if (pokemon.BasePokemon.Abilities.Count <= 0)
-                    throw new InvalidAmountException("Pokemon cannot have no abilities", pokemon.BasePokemon.Abilities.Count, new Range(1, int.MaxValue));
-            }
+                ValidateBasePokemon(pokemon.BasePokemon);
+        }
+
+        private static void ValidateBasePokemon(BasePokemon basePokemon)
+        {
+            if (basePokemon.Id <= 0)
+                throw new InvalidIdException("BasePokemon Id cannot be" + basePokemon.Id, basePokemon.Id, basePokemon.GetType());
+            if (string.IsNullOrEmpty(basePokemon.Name))
+                throw new InvalidNameException("BasePokemon Name cannot be null or empty", basePokemon.Name, basePokemon.GetType());
+            if (basePokemon.Typings == null)
+                throw new InvalidVariableException("Pokemon Typing cannot be null", basePokemon.Typings, basePokemon.GetType());
+            if (basePokemon.Typings.Count <= 0)
+                throw new InvalidAmountException("Pokemon cannot have no typing", basePokemon.Typings.Count, new Range(1, int.MaxValue));
+            if (basePokemon.BaseStats == null)
+                throw new InvalidVariableException("Pokemon Stats cannot be null", basePokemon.BaseStats, typeof(BasePokemon));
+            if (basePokemon.BaseStats.Hp <= 0)
+                throw new InvalidVariableException("Pokemon Hp cannot be" + basePokemon.BaseStats.Hp, basePokemon.BaseStats.Hp, basePokemon.BaseStats.GetType());
+            if (basePokemon.BaseStats.Attack <= 0)
+                throw new InvalidVariableException("Pokemon Attack cannot be" + basePokemon.BaseStats.Attack, basePokemon.BaseStats.Attack, basePokemon.BaseStats.GetType());
+            if (basePokemon.BaseStats.Defense <= 0)
+                throw new InvalidVariableException("Pokemon Defense cannot be" + basePokemon.BaseStats.Defense, basePokemon.BaseStats.Defense, basePokemon.BaseStats.GetType());
+            if (basePokemon.BaseStats.SpecialAttack <= 0)
+                throw new InvalidVariableException("Pokemon SpecialAttack cannot be" + basePokemon.BaseStats.SpecialAttack, basePokemon.BaseStats.SpecialAttack, basePokemon.BaseStats.GetType());
+            if (basePokemon.BaseStats.SpecialDefense <= 0)
+                throw new InvalidVariableException("Pokemon SpecialDefense cannot be" + basePokemon.BaseStats.SpecialDefense, basePokemon.BaseStats.SpecialDefense, basePokemon.BaseStats.GetType());
+            if (basePokemon.BaseStats.Speed <= 0)
+                throw new InvalidVariableException("Pokemon Speed cannot be" + basePokemon.BaseStats.Speed, basePokemon.BaseStats.Speed, basePokemon.BaseStats.GetType());
+            if (basePokemon.Abilities == null)
+                throw new InvalidVariableException("Pokemon Abilities cannot be null", basePokemon.Abilities, basePokemon.GetType());
+            if (basePokemon.Abilities.Count <= 0)
+                throw new InvalidAmountException("Pokemon cannot have no abilities", basePokemon.Abilities.Count, new Range(1, int.MaxValue));
         }
     }
 }
