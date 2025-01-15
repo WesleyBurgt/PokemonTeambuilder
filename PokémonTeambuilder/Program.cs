@@ -26,7 +26,15 @@ namespace PokémonTeambuilder
                     client.Timeout = TimeSpan.FromMinutes(5);
                 });
 
-            var connectionString = builder.Configuration.GetConnectionString("PokemonBuilderDatabaseConnectionString");
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            var sqlPassword = Environment.GetEnvironmentVariable("SQL_PASSWORD_PokemonTeambuilder") ?? throw new InvalidOperationException("SQL_PASSWORD_PokemonTeambuilder is not set");
+            var connectionString = configuration.GetConnectionString("PokemonBuilderDatabaseConnectionString") + $"Password={sqlPassword};";
 
             builder.Services.AddDbContext<PokemonTeambuilderDbContext>(options =>
                 options.UseSqlServer(connectionString,sqlOptions => sqlOptions.CommandTimeout(180)));
